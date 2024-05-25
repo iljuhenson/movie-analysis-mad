@@ -10,7 +10,6 @@ movies_metadata_file_path = r"input\\archive\\movies_metadata.csv"
 movies_metadata = pd.read_csv(movies_metadata_file_path,low_memory=False)
 # Checking for missing values
 missing_values = movies_df.isnull().sum()
-
 # Checking for duplicate rows
 duplicate_rows = movies_df.duplicated().sum()
 
@@ -54,7 +53,7 @@ for i in range(len(movies_metadata["spoken_languages"])):
     if temp_list_of_spoken_languages_per_movie[i] != "[]":
         temp_list_of_spoken_languages_per_movie[i] = ast.literal_eval(
             list_of_spoken_languages_per_movie[i]
-        )[0]["name"]
+        )[0]["iso_639_1"]
     else:
         temp_list_of_spoken_languages_per_movie[i] = None
 
@@ -68,7 +67,7 @@ for i in range(len(movies_metadata["production_companies"])):
     if temp_list_of_companies_per_movie[i] != "[]":
         temp_list_of_companies_per_movie[i] = ast.literal_eval(
             list_of_companies_per_movie[i]
-        )[0]["name"]
+        )[0]["id"]
     else:
         temp_list_of_spoken_languages_per_movie[i] = None
 
