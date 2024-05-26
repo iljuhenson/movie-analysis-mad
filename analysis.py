@@ -29,4 +29,36 @@ for i, col in enumerate(numerical_columns, 1):
 
 plt.tight_layout()
 plt.show()
+
+# Plotting the relationship between budget and worldwide gross revenue
+plt.figure(figsize=(12, 6))
+sns.scatterplot(x='budget', y='revenue', data=movies_df)
+plt.title('Relationship between Budget and Revenue')
+plt.xlabel('Budget')
+plt.ylabel('Revenue')
+plt.show()
+
+# Plotting the relationship between domestic and international gross revenue
+plt.figure(figsize=(12, 6))
+sns.scatterplot(x='avg_of_rating', y='budget', data=movies_df)
+plt.title('Relationship between Budget and Average movie rating')
+plt.xlabel('Budget')
+plt.ylabel('Avg of Rating')
+plt.show()
+
+# Plotting the trend of worldwide gross revenue over the years
+plt.figure(figsize=(12, 6))
+sns.lineplot(x='release_date', y='revenue', data=movies_df)
+plt.title('Trend of Revenue Over the Years')
+plt.xlabel('Date')
+plt.ylabel('Revenue')
+plt.show()
+
+# # Plotting the trend of budget over the years
+plt.figure(figsize=(12, 6))
+sns.lineplot(x='release_date', y='budget', data=movies_df)
+plt.title('Trend of Budget Over the Years')
+plt.xlabel('Date')
+plt.ylabel('Budget')
+plt.show()
 print('done')

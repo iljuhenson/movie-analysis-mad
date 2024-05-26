@@ -25,7 +25,9 @@ numerical_columns = [
     "production_countries",
 ]
 numerical_values = {column: movies_metadata[column] for column in numerical_columns}
-
+movie_ids = movies_df["movieId"].to_list()
+movie_ids2 = movies_metadata["id"].to_list()
+#print(movies_metadata.isnull().sum())
 #setup wartosci nienumerycznych na liczby
 
 list_of_genres_per_movie = movies_metadata["genres"].to_list()
@@ -79,9 +81,9 @@ temp_list_of_release_date_per_movie.extend(list_of_release_date_per_movie)
 
 for i in range(len(movies_metadata["release_date"])):
     if temp_list_of_release_date_per_movie[i] != "" and not pd.isnull(temp_list_of_release_date_per_movie[i]):
-        temp_list_of_release_date_per_movie[i] = temp_list_of_release_date_per_movie[i].replace("-","")
+        temp_list_of_release_date_per_movie[i] = temp_list_of_release_date_per_movie[i].replace("-","")[:-2]
     else:
-        temp_list_of_release_date_per_movie[i] = 0
+        temp_list_of_release_date_per_movie[i] = 190001
 
 movies_metadata["release_date"] = temp_list_of_release_date_per_movie
 
