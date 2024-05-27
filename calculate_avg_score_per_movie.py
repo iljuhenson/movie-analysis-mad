@@ -17,11 +17,11 @@ def calculate_avg_rating(start_idx, end_idx):
 file_path = r"input\\archive\\ratings.csv"
 movies_df = pd.read_csv(file_path)
 
-# amount_of_movies = len(movies_df["movieId"].unique())
+amount_of_movies = max(movies_df["movieId"].unique())
 amount_of_reviews = len(movies_df)
 
-movie_sum_of_rating = [0.0] * amount_of_reviews
-movie_amount_of_ratings_records = [0] * amount_of_reviews
+movie_sum_of_rating = [0.0] * amount_of_movies
+movie_amount_of_ratings_records = [0] * amount_of_movies
 
 # Split the range into chunks
 chunk_size = 1000000
@@ -41,13 +41,14 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
 
 # Calculating the average of rating for each movie
 
-movie_avg_of_rating = [0.0] * amount_of_reviews
+movie_avg_of_rating = [0.0] * amount_of_movies
 
 for i in range(amount_of_reviews):
     # If there is no rating for a movie, set the average rating to -1
     try:
-        movie_avg_of_rating[i] = (
-            movie_sum_of_rating[i] / movie_amount_of_ratings_records[i]
+        movie_id = int(movies_df["movieId"][i]) - 1
+        movie_avg_of_rating[movie_id] = (
+            movie_sum_of_rating[movie_id] / movie_amount_of_ratings_records[movie_id]
         )
     except ZeroDivisionError:
         movie_avg_of_rating[i] = -1
