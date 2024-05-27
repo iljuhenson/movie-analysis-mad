@@ -1,66 +1,42 @@
 # Importing necessary libraries
 import pandas as pd
-import concurrent.futures
-
-
-def calculate_avg_rating(start_idx, end_idx):
-    for idx in range(start_idx, end_idx):
-        movie_sum_of_rating[int(movies_df.loc[idx, "movieId"])] += float(
-            movies_df.loc[idx, "rating"]
-        )
-        movie_amount_of_ratings_records[int(movies_df.loc[idx, "movieId"])] += 1
-        if idx % 100000 == 0:
-            print(f"Processed {idx} records")
 
 
 # Loading the dataset
 file_path = r"input\\archive\\ratings.csv"
-movies_df = pd.read_csv(file_path)
+reviews_df = pd.read_csv(file_path)
 
-amount_of_movies = max(movies_df["movieId"].unique())
-amount_of_reviews = len(movies_df)
+movie_rating_sum_and_rating_counter: dict[int, [int, int]] = {}
 
-movie_sum_of_rating = [0.0] * amount_of_movies
-movie_amount_of_ratings_records = [0] * amount_of_movies
+for review_field in reviews_df.itertuples():
+    if review_field.movieId in movie_rating_sum_and_rating_counter:
+        rating, amount = movie_rating_sum_and_rating_counter[review_field.movieId]
 
-# Split the range into chunks
-chunk_size = 1000000
-num_chunks = amount_of_reviews // chunk_size
-ranges = [(i * chunk_size, (i + 1) * chunk_size) for i in range(num_chunks)]
+        movie_rating_sum_and_rating_counter[review_field.movieId] = [
+            rating + review_field.rating,
+            amount + 1,
+        ]
+    else:
+        movie_rating_sum_and_rating_counter[review_field.movieId] = [
+            review_field.rating,
+            1,
+        ]
 
-# Create a thread pool
-with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-    # Submit the tasks to the thread pool
-    futures = [
-        executor.submit(calculate_avg_rating, start_idx, end_idx)
-        for start_idx, end_idx in ranges
-    ]
+average_rating: list[int] = []
 
-    # Wait for all tasks to complete
-    concurrent.futures.wait(futures)
-
-# Calculating the average of rating for each movie
-
-movie_avg_of_rating = [0.0] * amount_of_movies
-
-for i in range(amount_of_reviews):
-    # If there is no rating for a movie, set the average rating to -1
-    try:
-        movie_id = int(movies_df["movieId"][i]) - 1
-        movie_avg_of_rating[movie_id] = (
-            movie_sum_of_rating[movie_id] / movie_amount_of_ratings_records[movie_id]
-        )
-    except ZeroDivisionError:
-        movie_avg_of_rating[i] = -1
+for movie_id, [rating, amount] in movie_rating_sum_and_rating_counter.items():
+    if amount > 0:
+        average_rating.append(rating / amount)
+    else:
+        average_rating.append(-1)
 
 output_data = {
-    "movieId": movies_df["movieId"],
-    "avg_of_rating": movie_avg_of_rating,
+    "movieId": movie_rating_sum_and_rating_counter.keys(),
+    "avg_of_rating": average_rating,
 }
-output_df = pd.DataFrame(output_data)
-# omiting the movies with no rating
-output_df = output_df[output_df["avg_of_rating"] != -1]
-output_file_path = "output/avg_of_rating_per_movieId.csv"
 
+output_df = pd.DataFrame(output_data)
+output_df = output_df[output_df["avg_of_rating"] != -1]
+output_file_path = "output/avg_of_rating_per_movie_Id.csv"
 
 output_df.to_csv(output_file_path, index=False)
