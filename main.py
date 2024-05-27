@@ -83,7 +83,7 @@ for i in range(len(movies_metadata["release_date"])):
     if temp_list_of_release_date_per_movie[i] != "" and not pd.isnull(temp_list_of_release_date_per_movie[i]):
         temp_list_of_release_date_per_movie[i] = temp_list_of_release_date_per_movie[i].replace("-","")[:-2]
     else:
-        temp_list_of_release_date_per_movie[i] = 190001
+        temp_list_of_release_date_per_movie[i] = 0
 
 movies_metadata["release_date"] = temp_list_of_release_date_per_movie
 
