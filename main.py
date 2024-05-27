@@ -114,6 +114,15 @@ output_data = {
 }
 output_df = pd.DataFrame(output_data)
 # omiting the movies with no rating
+output_df = output_df[output_df["budget"] != 0]
+output_df = output_df[output_df["genres"] != 0]
+output_df = output_df[output_df["original_language"] != 0]
+output_df = output_df[output_df["release_date"] != 0]
+output_df = output_df[output_df["revenue"] != 0]
+output_df = output_df[output_df["spoken_languages"] != 0]
+output_df = output_df[output_df["runtime"] != 0]
+output_df = output_df[output_df["production_countries"] != 0]
+output_df = output_df[output_df["vote_count"] != 0]
 output_df = output_df[output_df["avg_of_rating"] != -1]
 output_file_path = "output/movies_relevant_data.csv"
 
