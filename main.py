@@ -4,7 +4,118 @@ import seaborn as sns
 import ast
 import numpy as np
 
-country_codes = [
+
+def process_genres(movies_metadata):
+    temp_list_of_genres_per_movie = []
+    temp_list_of_genres_per_movie.extend(movies_metadata["genres"].to_list())
+
+    for i in range(len(movies_metadata["genres"])):
+        if temp_list_of_genres_per_movie[i] != "[]":
+            temp_list_of_genres_per_movie[i] = ast.literal_eval(
+                movies_metadata["genres"].to_list()[i]
+            )[0]["id"]
+        else:
+            temp_list_of_genres_per_movie[i] = 0
+
+    movies_metadata["genres"] = temp_list_of_genres_per_movie
+    return movies_metadata
+
+
+def process_spoken_languages(movies_metadata):
+    list_of_spoken_languages_per_movie = movies_metadata["spoken_languages"].to_list()
+    temp_list_of_spoken_languages_per_movie = []
+    temp_list_of_spoken_languages_per_movie.extend(list_of_spoken_languages_per_movie)
+
+    for i in range(len(movies_metadata["spoken_languages"])):
+        if temp_list_of_spoken_languages_per_movie[i] != "[]":
+            temp_list_of_spoken_languages_per_movie[i] = COUNTRY_CODES.index(
+                (
+                    ast.literal_eval(list_of_spoken_languages_per_movie[i])[0][
+                        "iso_639_1"
+                    ]
+                ).lower()
+            )
+        else:
+            temp_list_of_spoken_languages_per_movie[i] = 0
+
+    movies_metadata["spoken_languages"] = temp_list_of_spoken_languages_per_movie
+    return movies_metadata
+
+
+def process_adult(movies_metadata):
+    list_of_adult_per_movie = movies_metadata["adult"].to_list()
+    for i in range(len(movies_metadata["adult"])):
+        list_of_adult_per_movie[i] = int(list_of_adult_per_movie[i])
+    movies_metadata["adult"] = list_of_adult_per_movie
+    return movies_metadata
+
+
+def process_production_countries(movies_metadata):
+    list_of_production_countries_per_movie = movies_metadata[
+        "production_countries"
+    ].to_list()
+    temp_list_of_production_countries_per_movie = []
+    temp_list_of_production_countries_per_movie.extend(
+        list_of_production_countries_per_movie
+    )
+
+    for i in range(len(movies_metadata["production_countries"])):
+        if (
+            temp_list_of_production_countries_per_movie[i] != "[]"
+            and not temp_list_of_production_countries_per_movie[i] in COUNTRY_CODES
+        ):
+            temp_list_of_production_countries_per_movie[i] = COUNTRY_CODES.index(
+                (
+                    ast.literal_eval(list_of_production_countries_per_movie[i])[0][
+                        "iso_3166_1"
+                    ]
+                ).lower()
+            )
+        else:
+            temp_list_of_production_countries_per_movie[i] = 0
+
+    movies_metadata["production_countries"] = (
+        temp_list_of_production_countries_per_movie
+    )
+    return movies_metadata
+
+
+def process_release_date(movies_metadata):
+    list_of_release_date_per_movie = movies_metadata["release_date"].to_list()
+    temp_list_of_release_date_per_movie = []
+    temp_list_of_release_date_per_movie.extend(list_of_release_date_per_movie)
+
+    for i in range(len(movies_metadata["release_date"])):
+        if temp_list_of_release_date_per_movie[i] != "" and not pd.isnull(
+            temp_list_of_release_date_per_movie[i]
+        ):
+            temp_list_of_release_date_per_movie[i] = (
+                temp_list_of_release_date_per_movie[i].replace("-", "")[:-2]
+            )
+        else:
+            temp_list_of_release_date_per_movie[i] = 0
+
+    movies_metadata["release_date"] = temp_list_of_release_date_per_movie
+    return movies_metadata
+
+
+def process_original_language(movies_metadata):
+    list_of_original_language_per_movie = movies_metadata["original_language"].to_list()
+    for i in range(len(movies_metadata["original_language"])):
+        if list_of_original_language_per_movie[i] != "[]" and not pd.isnull(
+            list_of_original_language_per_movie[i]
+        ):
+            list_of_original_language_per_movie[i] = COUNTRY_CODES.index(
+                list_of_original_language_per_movie[i].lower()
+            )
+        else:
+            list_of_original_language_per_movie[i] = 0
+
+    movies_metadata["original_language"] = list_of_original_language_per_movie
+    return movies_metadata
+
+
+COUNTRY_CODES = [
     "",
     "mn",
     "nz",
@@ -222,7 +333,7 @@ movies_metadata_file_path = r"input\\archive\\movies_metadata.csv"
 movies_metadata = pd.read_csv(movies_metadata_file_path, low_memory=False)
 
 # List of numerical variables to plot
-numerical_columns = [
+columns_names = [
     "adult",
     "budget",
     "genres",
@@ -234,102 +345,22 @@ numerical_columns = [
     "production_companies",
     "production_countries",
 ]
-numerical_values = {column: movies_metadata[column] for column in numerical_columns}
+numerical_values = {column: movies_metadata[column] for column in columns_names}
 movie_ids = movies_df["movieId"].to_list()
 movie_ids2 = movies_metadata["id"].to_list()
-z = 0
 
-# print(movies_metadata.isnull().sum())
-# setup wartosci nienumerycznych na liczby
+# setup
+movies_metadata = process_genres(movies_metadata)
 
-list_of_genres_per_movie = movies_metadata["genres"].to_list()
-temp_list_of_genres_per_movie = []
-temp_list_of_genres_per_movie.extend(list_of_genres_per_movie)
+movies_metadata = process_spoken_languages(movies_metadata)
 
-for i in range(len(movies_metadata["genres"])):
-    if temp_list_of_genres_per_movie[i] != "[]":
-        temp_list_of_genres_per_movie[i] = ast.literal_eval(
-            list_of_genres_per_movie[i]
-        )[0]["id"]
-    else:
-        temp_list_of_genres_per_movie[i] = 0
+movies_metadata = process_adult(movies_metadata)
 
-movies_metadata["genres"] = temp_list_of_genres_per_movie
+movies_metadata = process_production_countries(movies_metadata)
 
-list_of_spoken_languages_per_movie = movies_metadata["spoken_languages"].to_list()
-temp_list_of_spoken_languages_per_movie = []
-temp_list_of_spoken_languages_per_movie.extend(list_of_spoken_languages_per_movie)
+movies_metadata = process_release_date(movies_metadata)
 
-
-for i in range(len(movies_metadata["spoken_languages"])):
-    if temp_list_of_spoken_languages_per_movie[i] != "[]":
-        temp_list_of_spoken_languages_per_movie[i] = country_codes.index(
-            (
-                ast.literal_eval(list_of_spoken_languages_per_movie[i])[0]["iso_639_1"]
-            ).lower()
-        )
-    else:
-        temp_list_of_spoken_languages_per_movie[i] = 0
-
-movies_metadata["spoken_languages"] = temp_list_of_spoken_languages_per_movie
-
-list_of_adult_per_movie = movies_metadata["adult"].to_list()
-for i in range(len(movies_metadata["adult"])):
-    list_of_adult_per_movie[i] = int(list_of_adult_per_movie[i])
-movies_metadata["adult"] = list_of_adult_per_movie
-
-list_of_production_countries_per_movie = movies_metadata[
-    "production_countries"
-].to_list()
-temp_list_of_production_countries_per_movie = []
-temp_list_of_production_countries_per_movie.extend(
-    list_of_production_countries_per_movie
-)
-
-for i in range(len(movies_metadata["production_countries"])):
-    if (
-        temp_list_of_production_countries_per_movie[i] != "[]"
-        and not temp_list_of_production_countries_per_movie[i] in country_codes
-    ):
-        temp_list_of_production_countries_per_movie[i] = country_codes.index(
-            (
-                ast.literal_eval(list_of_production_countries_per_movie[i])[0][
-                    "iso_3166_1"
-                ]
-            ).lower()
-        )
-    else:
-        temp_list_of_production_countries_per_movie[i] = 0
-movies_metadata["production_countries"] = temp_list_of_production_countries_per_movie
-
-list_of_release_date_per_movie = movies_metadata["release_date"].to_list()
-temp_list_of_release_date_per_movie = []
-temp_list_of_release_date_per_movie.extend(list_of_release_date_per_movie)
-
-for i in range(len(movies_metadata["release_date"])):
-    if temp_list_of_release_date_per_movie[i] != "" and not pd.isnull(
-        temp_list_of_release_date_per_movie[i]
-    ):
-        temp_list_of_release_date_per_movie[i] = temp_list_of_release_date_per_movie[
-            i
-        ].replace("-", "")[:-2]
-    else:
-        temp_list_of_release_date_per_movie[i] = 0
-
-movies_metadata["release_date"] = temp_list_of_release_date_per_movie
-
-list_of_original_language_per_movie = movies_metadata["original_language"].to_list()
-for i in range(len(movies_metadata["original_language"])):
-    if list_of_original_language_per_movie[i] != "[]" and not pd.isnull(
-        list_of_original_language_per_movie[i]
-    ):
-        list_of_original_language_per_movie[i] = country_codes.index(
-            list_of_original_language_per_movie[i].lower()
-        )
-    else:
-        list_of_original_language_per_movie[i] = 0
-
-movies_metadata["original_language"] = list_of_original_language_per_movie
+movies_metadata = process_original_language(movies_metadata)
 
 ids = movies_metadata["imdb_id"].to_list()
 ids2 = movies_df["imdbId"].to_list()
@@ -347,14 +378,10 @@ for i in range(len(ids)):
     if found == False:
         result.append(0)
         resultIds.append(ids[i])
- 
-# movies_df["avg_of_rating"] = result
-# movies_df["imdbId"] = resultIds
 new_avg = {
     "imdbId":resultIds,
     "avg_of_rating":result
 }
-# koniec setupu
 
 output_data = {
     "matched_ids (avg)":new_avg["imdbId"],
