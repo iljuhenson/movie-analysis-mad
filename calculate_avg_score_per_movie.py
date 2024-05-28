@@ -1,9 +1,8 @@
 # Importing necessary libraries
 import pandas as pd
 
-
 # Loading the dataset
-file_path = r"input\\archive\\ratings.csv"
+file_path = r"input/archive/ratings.csv"
 reviews_df = pd.read_csv(file_path)
 
 movie_rating_sum_and_rating_counter: dict[int, [int, int]] = {}
@@ -30,13 +29,34 @@ for movie_id, [rating, amount] in movie_rating_sum_and_rating_counter.items():
     else:
         average_rating.append(-1)
 
+# Adding additional ids for the dataset
+file_path_for_ids = r"input/archive/links.csv"
+links_df = pd.read_csv(file_path_for_ids)
+
+tmdbIds: list[int] = []
+imdbIds: list[int] = []
+
+for movie_id in movie_rating_sum_and_rating_counter.keys():
+    item = links_df[links_df["movieId"] == movie_id]
+    if not pd.isna(item.imdbId.values[0]):
+        imdbIds.append(int(item.imdbId.values[0]))
+    else:
+        imdbIds.append(-1) ############ UWAGA ####################### Jeżeli niektórych wartości nie ma bedzie podane id '-1'
+
+    if not pd.isna(item.tmdbId.values[0]):
+        tmdbIds.append(int(item.tmdbId.values[0]))
+    else:
+        tmdbIds.append(-1) ############ UWAGA ####################### Jeżeli niektórych wartości nie ma bedzie podane id '-1'
+
 output_data = {
     "movieId": movie_rating_sum_and_rating_counter.keys(),
     "avg_of_rating": average_rating,
+    "imdbId": imdbIds,
+    "tmdbId": tmdbIds,
 }
 
 output_df = pd.DataFrame(output_data)
 output_df = output_df[output_df["avg_of_rating"] != -1]
-output_file_path = "output/avg_of_rating_per_movie_Id.csv"
+output_file_path = "output/avg_of_rating_per_movieId.csv"
 
 output_df.to_csv(output_file_path, index=False)
