@@ -334,24 +334,28 @@ movies_metadata["original_language"] = list_of_original_language_per_movie
 ids = movies_metadata["imdb_id"].to_list()
 ids2 = movies_df["imdbId"].to_list()
 ratings = movies_df["avg_of_rating"].to_list()
-matched_ids = []
+result = []
+resultIds = []
 for i in range(len(ids)):
     found = False
     for j in range(len(ids2)):
         if ids[i] == ids2[j]:
             found = True
-            matched_ids.append(ratings[j])
+            result.append(ratings[j])
+            resultIds.append(ids2[j])
             break
     if found == False:
-        matched_ids.append(0)
-
-
+        result.append(0)
+        resultIds.append(ids[i])
+        
+    movies_df["avg_of_rating"] = result
+    movies_df["imdbId"] = resultIds
 # koniec setupu
 
 output_data = {
-    "matched_ids": matched_ids,
-    "movieId": movies_metadata["imdb_id"],
-    "avg_of_rating": ratings,
+    "matched_ids (avg)":movies_df["imdbId"],
+    "movieId (movies metadata)": movies_metadata["imdb_id"],
+    "avg_of_rating": movies_df["avg_of_rating"],
     "adult": movies_metadata["adult"],
     "budget": movies_metadata["budget"],
     "genres": movies_metadata["genres"],
