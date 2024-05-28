@@ -33,21 +33,26 @@ for movie_id, [rating, amount] in movie_rating_sum_and_rating_counter.items():
 file_path_for_ids = r"input/archive/links.csv"
 links_df = pd.read_csv(file_path_for_ids)
 
-tmdbIds: list[int] = []
-imdbIds: list[int] = []
+tmdbIds: list[str] = []
+imdbIds: list[str] = []
 
 for movie_id in movie_rating_sum_and_rating_counter.keys():
     item = links_df[links_df["movieId"] == movie_id]
     if not pd.isna(item.imdbId.values[0]):
-        imdbIds.append(int(item.imdbId.values[0]))
+        value = str(int((item.imdbId.values[0])))
+        while len(value) < 7:
+            value = "0" + value
+        value = "tt" + value
+        imdbIds.append(value)
     else:
-        imdbIds.append(-1) ############ UWAGA ####################### Jeżeli niektórych wartości nie ma bedzie podane id '-1'
+        imdbIds.append("-1")  # -1 Dla braku wartości
 
     if not pd.isna(item.tmdbId.values[0]):
-        tmdbIds.append(int(item.tmdbId.values[0]))
-    else:
-        tmdbIds.append(-1) ############ UWAGA ####################### Jeżeli niektórych wartości nie ma bedzie podane id '-1'
 
+        value = str(int((item.tmdbId.values[0])))
+        tmdbIds.append(value)
+    else:
+        tmdbIds.append("-1")  # -1 Dla braku wartości
 output_data = {
     "movieId": movie_rating_sum_and_rating_counter.keys(),
     "avg_of_rating": average_rating,
