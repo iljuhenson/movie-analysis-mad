@@ -365,24 +365,28 @@ movies_metadata = process_original_language(movies_metadata)
 ids = movies_metadata["imdb_id"].to_list()
 ids2 = movies_df["imdbId"].to_list()
 ratings = movies_df["avg_of_rating"].to_list()
-matched_ids = []
+result = []
+resultIds = []
 for i in range(len(ids)):
     found = False
     for j in range(len(ids2)):
         if ids[i] == ids2[j]:
             found = True
-            matched_ids.append(ratings[j])
+            result.append(ratings[j])
+            resultIds.append(ids2[j])
             break
     if found == False:
-        matched_ids.append(0)
-
-
-# Output to file
+        result.append(0)
+        resultIds.append(ids[i])
+new_avg = {
+    "imdbId":resultIds,
+    "avg_of_rating":result
+}
 
 output_data = {
-    "matched_ids": matched_ids,
-    "movieId": movies_metadata["imdb_id"],
-    "avg_of_rating": ratings,
+    "matched_ids (avg)":new_avg["imdbId"],
+    "movieId (movies metadata)": movies_metadata["imdb_id"],
+    "avg_of_rating": new_avg["avg_of_rating"],
     "adult": movies_metadata["adult"],
     "budget": movies_metadata["budget"],
     "genres": movies_metadata["genres"],
@@ -407,10 +411,5 @@ output_df = output_df[output_df["production_countries"] != 0]
 output_df = output_df[output_df["vote_count"] != 0]
 output_df = output_df[output_df["avg_of_rating"] != -1]
 output_file_path = "output/movies_relevant_data.csv"
-z = 0
-for i in output_df["movieId"].to_list():
-    if i in movie_ids2:
-        z += 1
-print(z)
 output_df.to_csv(output_file_path, index=False)
 print("done")
