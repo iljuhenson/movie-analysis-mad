@@ -347,15 +347,19 @@ for i in range(len(ids)):
     if found == False:
         result.append(0)
         resultIds.append(ids[i])
-        
-    movies_df["avg_of_rating"] = result
-    movies_df["imdbId"] = resultIds
+ 
+# movies_df["avg_of_rating"] = result
+# movies_df["imdbId"] = resultIds
+new_avg = {
+    "imdbId":resultIds,
+    "avg_of_rating":result
+}
 # koniec setupu
 
 output_data = {
-    "matched_ids (avg)":movies_df["imdbId"],
+    "matched_ids (avg)":new_avg["imdbId"],
     "movieId (movies metadata)": movies_metadata["imdb_id"],
-    "avg_of_rating": movies_df["avg_of_rating"],
+    "avg_of_rating": new_avg["avg_of_rating"],
     "adult": movies_metadata["adult"],
     "budget": movies_metadata["budget"],
     "genres": movies_metadata["genres"],
@@ -380,10 +384,5 @@ output_df = output_df[output_df["production_countries"] != 0]
 output_df = output_df[output_df["vote_count"] != 0]
 output_df = output_df[output_df["avg_of_rating"] != -1]
 output_file_path = "output/movies_relevant_data.csv"
-z = 0
-for i in output_df["movieId"].to_list():
-    if i in movie_ids2:
-        z += 1
-print(z)
 output_df.to_csv(output_file_path, index=False)
 print("done")
