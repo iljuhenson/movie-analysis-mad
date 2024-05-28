@@ -27,6 +27,8 @@ numerical_columns = [
 numerical_values = {column: movies_metadata[column] for column in numerical_columns}
 movie_ids = movies_df["movieId"].to_list()
 movie_ids2 = movies_metadata["id"].to_list()
+z = 0
+
 #print(movies_metadata.isnull().sum())
 #setup wartosci nienumerycznych na liczby
 
@@ -96,10 +98,25 @@ for i in range(len(movies_metadata["original_language"])):
 
 movies_metadata["original_language"] = list_of_original_language_per_movie
 
+ids = movies_metadata["imdb_id"].to_list()
+ids2 = movies_df["imdbId"].to_list()
+ratings = movies_df["avg_of_rating"].to_list()
+result = []
+for i in ids:
+    found = False
+    for j in ids2:
+        if i == j:
+            found = True
+            result.append(ratings[j])
+            break;
+    if found == False:
+        result.append(0)
+movies_df["avg_of_rating"] = result
+
 # koniec setupu
 
 output_data = {
-    "movieId": movies_df["movieId"],
+    "movieId": movies_metadata["imdb_id"],
     "avg_of_rating": movies_df["avg_of_rating"],
     "adult":movies_metadata["adult"],
     "budget":movies_metadata["budget"],
@@ -125,7 +142,11 @@ output_df = output_df[output_df["production_countries"] != 0]
 output_df = output_df[output_df["vote_count"] != 0]
 output_df = output_df[output_df["avg_of_rating"] != -1]
 output_file_path = "output/movies_relevant_data.csv"
-
+z=0
+for i in output_df["movieId"].to_list():
+    if i in movie_ids2:
+        z+=1
+print(z)
 output_df.to_csv(output_file_path, index=False)
 print("done")
 
