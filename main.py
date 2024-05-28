@@ -378,13 +378,10 @@ for i in range(len(ids)):
     if found == False:
         result.append(0)
         resultIds.append(ids[i])
-new_avg = {
-    "imdbId":resultIds,
-    "avg_of_rating":result
-}
+new_avg = {"imdbId": resultIds, "avg_of_rating": result}
 
 output_data = {
-    "matched_ids (avg)":new_avg["imdbId"],
+    "matched_ids (avg)": new_avg["imdbId"],
     "movieId (movies metadata)": movies_metadata["imdb_id"],
     "avg_of_rating": new_avg["avg_of_rating"],
     "adult": movies_metadata["adult"],
