@@ -5,7 +5,7 @@ from sklearn.cluster import KMeans
 
 file_path = "output/movies_relevant_data_num_ids.csv"
 movies_df = pd.read_csv(file_path)
-clustering_features = [
+clustering_features_simple = [
     "adult",
     "budget",
     "genres",
@@ -16,9 +16,10 @@ clustering_features = [
     "runtime",
     "production_countries",
     "vote_count",
+    "avg_of_rating",
 ]
 
-X_clustering_simple = movies_df[clustering_features]
+X_clustering_simple = movies_df[clustering_features_simple]
 
 wcss = []
 for i in range(1, 11):
@@ -50,7 +51,7 @@ kmeans_simple = KMeans(n_clusters=optimal_k, init="k-means++", random_state=42)
 movies_df["cluster"] = kmeans_simple.fit_predict(X_clustering_simple)
 
 # Grouping the data by clusters to analyze the characteristics
-cluster_summary_simple = movies_df.groupby("cluster").mean()[clustering_features]
+cluster_summary_simple = movies_df.groupby("cluster").mean()[clustering_features_simple]
 cluster_summary_simple["number_of_movies"] = movies_df["cluster"].value_counts()
 print(cluster_summary_simple)
 
@@ -59,7 +60,7 @@ cluster_summary_simple.to_csv("output/cluster_summary.csv")
 
 #            Understanding the results of the k-means
 
-movies_df_clustering = movies_df[clustering_features + ["cluster"]]
+movies_df_clustering = movies_df[clustering_features_simple + ["cluster"]]
 
 # Replacing the cluster labels with string labels for better visualization
 movies_df_clustering["cluster"] = movies_df_clustering["cluster"].astype(str)
@@ -68,7 +69,18 @@ movies_df_clustering["cluster"] = movies_df_clustering["cluster"].astype(str)
 sns.pairplot(movies_df_clustering, hue="cluster", palette="viridis", diag_kind="kde")
 plt.savefig("output/kmeans_pairplot.png")
 
-
+clustering_features = [
+    "adult",
+    "budget",
+    "genres",
+    "original_language",
+    "release_date",
+    "revenue",
+    "spoken_languages",
+    "runtime",
+    "production_countries",
+    "vote_count",
+]
 #            Linear Regression Model
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
