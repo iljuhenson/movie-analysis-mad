@@ -5,7 +5,7 @@ from sklearn.cluster import KMeans
 
 file_path = "output/movies_relevant_data_num_ids.csv"
 movies_df = pd.read_csv(file_path)
-clustering_features_simple = [
+clustering_features = [
     "adult",
     "budget",
     "genres",
@@ -18,7 +18,7 @@ clustering_features_simple = [
     "vote_count",
 ]
 
-X_clustering_simple = movies_df[clustering_features_simple]
+X_clustering_simple = movies_df[clustering_features]
 
 wcss = []
 for i in range(1, 11):
@@ -50,21 +50,46 @@ kmeans_simple = KMeans(n_clusters=optimal_k, init="k-means++", random_state=42)
 movies_df["cluster"] = kmeans_simple.fit_predict(X_clustering_simple)
 
 # Grouping the data by clusters to analyze the characteristics
-cluster_summary_simple = movies_df.groupby("cluster").mean()[clustering_features_simple]
+cluster_summary_simple = movies_df.groupby("cluster").mean()[clustering_features]
 cluster_summary_simple["number_of_movies"] = movies_df["cluster"].value_counts()
 print(cluster_summary_simple)
-pd.save(cluster_summary_simple, "output/cluster_summary_simple.txt")
+
+cluster_summary_simple.to_csv("output/cluster_summary.csv")
 
 
-# Understanding the results of the k-means
-# Selecting the features used for clustering
+#            Understanding the results of the k-means
 
-movies_df_clustering = movies_df[clustering_features_simple + ["cluster"]]
+movies_df_clustering = movies_df[clustering_features + ["cluster"]]
 
 # Replacing the cluster labels with string labels for better visualization
 movies_df_clustering["cluster"] = movies_df_clustering["cluster"].astype(str)
 
 # Creating a pairplot to visualize all possible XY graphs of every k-means group
 sns.pairplot(movies_df_clustering, hue="cluster", palette="viridis", diag_kind="kde")
-# plt.show()
 plt.savefig("output/kmeans_pairplot.png")
+
+
+#            Linear Regression Model
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error
+
+# Selecting features and target variable
+X = movies_df[clustering_features]
+y = movies_df["avg_of_rating"]
+
+# Splitting the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Creating and fitting the linear regression model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Making predictions on the test set
+y_pred = model.predict(X_test)
+
+# Calculating the mean squared error
+mae = mean_absolute_error(y_test, y_pred)
+print(f"Mean Absolute Error: {mae}")
