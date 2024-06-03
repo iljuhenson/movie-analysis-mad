@@ -115,6 +115,21 @@ def process_original_language(movies_metadata):
     return movies_metadata
 
 
+def process_cast(movies_metadata: pd.DataFrame, credits_df: pd.DataFrame) -> list:
+    cast_list: list[tuple[int, int]] = []
+    for entry in movies_metadata.itertuples():
+        credits_df[credits_df["id"] == entry.tmdb_id]
+        
+
+
+def process_director(movies_metadata: pd.DataFrame, credits_df: pd.DataFrame):
+    pass
+
+
+def process_keyword(movies_metadata: pd.DataFrame, keywords_df: pd.DataFrame):
+    pass
+
+
 COUNTRY_CODES = [
     "",
     "mn",
@@ -327,9 +342,14 @@ COUNTRY_CODES = [
     "sy",
 ]
 
-file_path = r"output\\avg_of_rating_per_movieId.csv"
+
+credits_file_path = r"input/archive/credits.csv"
+credits_df = pd.read(credits_file_path)
+keywords_file_path = r"input/archive/keywords.csv"
+keywords_df = pd.read(credits_file_path)
+file_path = r"output/avg_of_rating_per_movieId.csv"
 movies_df = pd.read_csv(file_path)
-movies_metadata_file_path = r"input\\archive\\movies_metadata.csv"
+movies_metadata_file_path = r"input/archive/movies_metadata.csv"
 movies_metadata = pd.read_csv(movies_metadata_file_path, low_memory=False)
 
 # List of numerical variables to plot
