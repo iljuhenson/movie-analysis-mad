@@ -1,4 +1,4 @@
-matched_ids (avg),movieId (movies metadata),avg_of_rating,adult,budget,genres,original_language,release_date,revenue,spoken_languages,runtime,production_countries,vote_count
+matched_ids_avg,movieId_movies_metadata,avg_of_rating,adult,budget,genres,original_language,release_date,revenue,spoken_languages,runtime,production_countries,vote_count
 tt0114709,tt0114709,3.8881574960610834,0,30000000,16,100,199510,373554033,100,81.0,27,5415
 tt0113497,tt0113497,3.2369531849577897,0,65000000,12,100,199512,262797249,100,104.0,27,2413
 tt0114885,tt0114885,2.8757128480375718,0,16000000,35,100,199512,81452156,100,127.0,27,34
