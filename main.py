@@ -382,7 +382,7 @@ new_avg = {"imdbId": resultIds, "avg_of_rating": result}
 
 output_data = {
     "matched_ids (avg)": new_avg["imdbId"],
-    "movieId (movies metadata)": movies_metadata["imdb_id"],
+    "movieId_(movies_metadata)": movies_metadata["imdb_id"],
     "avg_of_rating": new_avg["avg_of_rating"],
     "adult": movies_metadata["adult"],
     "budget": movies_metadata["budget"],
