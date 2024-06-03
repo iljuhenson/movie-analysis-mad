@@ -1,8 +1,8 @@
 from machine_learning import *
 
 # Training the Model
-for i in range(8, 80, 2):
-    for j in range(1, 60):
+for i in range(1, 12, 1):
+    for j in range(1, 50):
         history_reg = model_reg.fit(
             X_train, y_train, epochs=i, batch_size=j, validation_split=0.2, verbose=1
         )
