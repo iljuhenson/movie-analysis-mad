@@ -381,8 +381,8 @@ for i in range(len(ids)):
 new_avg = {"imdbId": resultIds, "avg_of_rating": result}
 
 output_data = {
-    "matched_ids (avg)": new_avg["imdbId"],
-    "movieId_(movies_metadata)": movies_metadata["imdb_id"],
+    "matched_ids_avg": new_avg["imdbId"],
+    "movieId_movies_metadata": movies_metadata["imdb_id"],
     "avg_of_rating": new_avg["avg_of_rating"],
     "adult": movies_metadata["adult"],
     "budget": movies_metadata["budget"],
