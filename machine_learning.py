@@ -16,9 +16,9 @@ scaler = MinMaxScaler()
 
 # One-hot encoding categorical features
 categorical_features_reg = encoder.fit_transform(movies_df[["adult", "genres", "original_language", "spoken_languages", "production_countries",]])
-scaled_features_reg = scaler.fit_transform(movies_df[["budget", "release_date", "runtime", "vote_count",]])
+scaled_features_reg = scaler.fit_transform(movies_df[["budget", "release_date", "runtime", "vote_count", 'revenue']])
 X = np.hstack([scaled_features_reg, categorical_features_reg])
-y = movies_df['revenue'].values
+y = movies_df["avg_of_rating"].values
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -38,4 +38,4 @@ history_reg = model_reg.fit(X_train, y_train, epochs=50, batch_size=32, validati
 # Evaluating the Model
 y_pred = model_reg.predict(X_test)
 mae = mean_absolute_error(y_test, y_pred)
-print(f"Mean Absolute Error for Revenue Prediction: ${mae:.2f}")
+print(f"Mean Absolute Error for Average Rating: {mae:.5f}")
