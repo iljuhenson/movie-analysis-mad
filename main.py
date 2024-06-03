@@ -115,16 +115,21 @@ def process_original_language(movies_metadata):
     return movies_metadata
 
 
-def process_cast(movies_metadata: pd.DataFrame, credits_df: pd.DataFrame) -> list:
-    cast_list: list[tuple[int, int]] = []
+def process_cast_director(movies_metadata: pd.DataFrame, credits_df: pd.DataFrame) -> list:
+    cast_list: list[int] = []
+    director_list: list[int] = []
+
     for entry in movies_metadata.itertuples():
-        credits_df[credits_df["id"] == entry.tmdb_id]
-        
+        # print(entry.id)
+        tmp = credits_df[credits_df["id"] == int(entry.id)]
+        actor_id = ast.literal_eval(tmp.cast.to_list()[0])[0]['id']
+        director_id = list(map(lambda x: x['job'] == "Director", ast.literal_eval(tmp.crew.to_list()[0])))[0]["id"]
 
+        cast_list.append(actor_id)
+        director_list.append(director_id)
 
-def process_director(movies_metadata: pd.DataFrame, credits_df: pd.DataFrame):
-    pass
-
+    return cast_list, director_list
+    
 
 def process_keyword(movies_metadata: pd.DataFrame, keywords_df: pd.DataFrame):
     pass
@@ -344,9 +349,9 @@ COUNTRY_CODES = [
 
 
 credits_file_path = r"input/archive/credits.csv"
-credits_df = pd.read(credits_file_path)
+credits_df = pd.read_csv(credits_file_path)
 keywords_file_path = r"input/archive/keywords.csv"
-keywords_df = pd.read(credits_file_path)
+keywords_df = pd.read_csv(credits_file_path)
 file_path = r"output/avg_of_rating_per_movieId.csv"
 movies_df = pd.read_csv(file_path)
 movies_metadata_file_path = r"input/archive/movies_metadata.csv"
@@ -370,6 +375,8 @@ movie_ids = movies_df["movieId"].to_list()
 movie_ids2 = movies_metadata["id"].to_list()
 
 # setup
+cast_list, director_list = process_cast_director(movies_metadata, credits_df)
+
 movies_metadata = process_genres(movies_metadata)
 
 movies_metadata = process_spoken_languages(movies_metadata)
@@ -381,6 +388,7 @@ movies_metadata = process_production_countries(movies_metadata)
 movies_metadata = process_release_date(movies_metadata)
 
 movies_metadata = process_original_language(movies_metadata)
+
 
 ids = movies_metadata["imdb_id"].to_list()
 ids2 = movies_df["imdbId"].to_list()
