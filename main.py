@@ -120,10 +120,22 @@ def process_cast_director(movies_metadata: pd.DataFrame, credits_df: pd.DataFram
     director_list: list[int] = []
 
     for entry in movies_metadata.itertuples():
-        # print(entry.id)
         tmp = credits_df[credits_df["id"] == int(entry.id)]
-        actor_id = ast.literal_eval(tmp.cast.to_list()[0])[0]['id']
-        director_id = list(map(lambda x: x['job'] == "Director", ast.literal_eval(tmp.crew.to_list()[0])))[0]["id"]
+        actors = ast.literal_eval(tmp.cast.to_list()[0])
+        actor_id = actors[0]['id'] if len(actors) > 0 else -1
+        director_id = -1
+        try:
+            ls = list(filter(lambda x: x['job'] == "Director", ast.literal_eval(tmp.cast.to_list()[0])))
+            director_id = ls[0]["id"] if len(ls) > 0 else -1
+        except KeyError or TypeError or IndexError:
+            pass
+
+        if director_id == -1:
+            try:
+                ls = list(filter(lambda x: x['job'] == "Director", ast.literal_eval(tmp.crew.to_list()[-1])))
+                director_id = ls[0]["id"] if len(ls) > 0 else -1
+            except KeyError or TypeError:
+                pass
 
         cast_list.append(actor_id)
         director_list.append(director_id)
@@ -376,6 +388,9 @@ movie_ids2 = movies_metadata["id"].to_list()
 
 # setup
 cast_list, director_list = process_cast_director(movies_metadata, credits_df)
+
+print(cast_list)
+print(director_list)
 
 movies_metadata = process_genres(movies_metadata)
 
