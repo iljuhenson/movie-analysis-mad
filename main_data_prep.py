@@ -120,7 +120,8 @@ def process_cast_director(
 ) -> list:
     cast_list: list[int] = []
     director_list: list[int] = []
-
+    num_of_misses_cast = 0
+    num_of_misses_director = 0
     for entry in movies_metadata.itertuples():
         tmp = credits_df[credits_df["id"] == int(entry.id)]
 
@@ -148,14 +149,15 @@ def process_cast_director(
                 if crew[i]["job"] == "Director":
                     director_id = crew[i]["id"]
                     break
-
+        if actor_id == 1:
+            num_of_misses_cast += 1
+        if director_id == 1:
+            num_of_misses_director += 1
         cast_list.append(actor_id)
         director_list.append(director_id)
 
-    num_of_misses_cast = cast_list.count(-1)
-    num_of_misses_director = director_list.count(-1)
-    print(f"Number of misses in cast: {num_of_misses_cast}")
-    print(f"Number of misses in director: {num_of_misses_director}")
+    print(f"Cast misses: {num_of_misses_cast/len(cast_list)*100}%")
+    print(f"Director misses: {num_of_misses_director/len(director_list)*100}%")
     return cast_list, director_list
 
 
@@ -405,67 +407,65 @@ movie_ids2 = movies_metadata["id"].to_list()
 # setup
 cast_list, director_list = process_cast_director(movies_metadata, credits_df)
 
-print(cast_list)
-print(director_list)
 
-# movies_metadata = process_genres(movies_metadata)
+movies_metadata = process_genres(movies_metadata)
 
-# movies_metadata = process_spoken_languages(movies_metadata)
+movies_metadata = process_spoken_languages(movies_metadata)
 
-# movies_metadata = process_adult(movies_metadata)
+movies_metadata = process_adult(movies_metadata)
 
-# movies_metadata = process_production_countries(movies_metadata)
+movies_metadata = process_production_countries(movies_metadata)
 
-# movies_metadata = process_release_date(movies_metadata)
+movies_metadata = process_release_date(movies_metadata)
 
-# movies_metadata = process_original_language(movies_metadata)
+movies_metadata = process_original_language(movies_metadata)
 
 
-# ids = movies_metadata["imdb_id"].to_list()
-# ids2 = movies_df["imdbId"].to_list()
-# ratings = movies_df["avg_of_rating"].to_list()
-# result = []
-# resultIds = []
-# for i in range(len(ids)):
-#     found = False
-#     for j in range(len(ids2)):
-#         if ids[i] == ids2[j]:
-#             found = True
-#             result.append(ratings[j])
-#             resultIds.append(ids2[j])
-#             break
-#     if found == False:
-#         result.append(0)
-#         resultIds.append(ids[i])
-# new_avg = {"imdbId": resultIds, "avg_of_rating": result}
+ids = movies_metadata["imdb_id"].to_list()
+ids2 = movies_df["imdbId"].to_list()
+ratings = movies_df["avg_of_rating"].to_list()
+result = []
+resultIds = []
+for i in range(len(ids)):
+    found = False
+    for j in range(len(ids2)):
+        if ids[i] == ids2[j]:
+            found = True
+            result.append(ratings[j])
+            resultIds.append(ids2[j])
+            break
+    if found == False:
+        result.append(0)
+        resultIds.append(ids[i])
+new_avg = {"imdbId": resultIds, "avg_of_rating": result}
 
-# output_data = {
-#     "matched_ids_avg": new_avg["imdbId"],
-#     "movieId_movies_metadata": movies_metadata["imdb_id"],
-#     "avg_of_rating": new_avg["avg_of_rating"],
-#     "adult": movies_metadata["adult"],
-#     "budget": movies_metadata["budget"],
-#     "genres": movies_metadata["genres"],
-#     "original_language": movies_metadata["original_language"],
-#     "release_date": movies_metadata["release_date"],
-#     "revenue": movies_metadata["revenue"],
-#     "spoken_languages": movies_metadata["spoken_languages"],
-#     "runtime": movies_metadata["runtime"],
-#     "production_countries": movies_metadata["production_countries"],
-#     "vote_count": movies_metadata["vote_count"],
-# }
-# output_df = pd.DataFrame(output_data)
-# # omiting the movies with no rating
-# output_df = output_df[output_df["budget"] != 0]
-# output_df = output_df[output_df["genres"] != 0]
-# output_df = output_df[output_df["original_language"] != 0]
-# output_df = output_df[output_df["release_date"] != 0]
-# output_df = output_df[output_df["revenue"] != 0]
-# output_df = output_df[output_df["spoken_languages"] != 0]
-# output_df = output_df[output_df["runtime"] != 0]
-# output_df = output_df[output_df["production_countries"] != 0]
-# output_df = output_df[output_df["vote_count"] != 0]
-# output_df = output_df[output_df["avg_of_rating"] != -1]
-# output_file_path = "output/movies_relevant_data.csv"
-# output_df.to_csv(output_file_path, index=False)
-# print("done")
+output_data = {
+    "matched_ids_avg": new_avg["imdbId"],
+    "movieId_movies_metadata": movies_metadata["imdb_id"],
+    "avg_of_rating": new_avg["avg_of_rating"],
+    "adult": movies_metadata["adult"],
+    "budget": movies_metadata["budget"],
+    "genres": movies_metadata["genres"],
+    "original_language": movies_metadata["original_language"],
+    "release_date": movies_metadata["release_date"],
+    "revenue": movies_metadata["revenue"],
+    "spoken_languages": movies_metadata["spoken_languages"],
+    "runtime": movies_metadata["runtime"],
+    "production_countries": movies_metadata["production_countries"],
+    "vote_count": movies_metadata["vote_count"],
+}
+output_df = pd.DataFrame(output_data)
+# omiting the movies with no rating
+output_df = output_df[output_df["budget"] != 0]
+output_df = output_df[output_df["genres"] != 0]
+output_df = output_df[output_df["original_language"] != 0]
+output_df = output_df[output_df["release_date"] != 0]
+output_df = output_df[output_df["revenue"] != 0]
+output_df = output_df[output_df["spoken_languages"] != 0]
+output_df = output_df[output_df["runtime"] != 0]
+output_df = output_df[output_df["production_countries"] != 0]
+output_df = output_df[output_df["vote_count"] != 0]
+output_df = output_df[output_df["avg_of_rating"] != -1]
+output_file_path = "output/movies_relevant_data.csv"
+output_df.to_csv(output_file_path, index=False)
+print("done")
