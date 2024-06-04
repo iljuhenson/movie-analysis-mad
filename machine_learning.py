@@ -48,12 +48,13 @@ model_reg = tf.keras.Sequential(
 model_reg.compile(optimizer="adam", loss="mean_squared_error")
 model_reg.summary()
 
-# Training the Model
-history_reg = model_reg.fit(
-    X_train, y_train, epochs=100, batch_size=32, validation_split=0.2, verbose=1
-)
+if __name__ == "__main__":
+    # Training the Model
+    history_reg = model_reg.fit(
+        X_train, y_train, epochs=100, batch_size=32, validation_split=0.2, verbose=1
+    )
 
-# Evaluating the Model
-y_pred = model_reg.predict(X_test)
-mae = mean_absolute_error(y_test, y_pred)
-print(f"Mean Absolute Error for Average Rating: {mae:.5f}")
+    # Evaluating the Model
+    y_pred = model_reg.predict(X_test)
+    mae = mean_absolute_error(y_test, y_pred)
+    print(f"Mean Absolute Error for Average Rating: {mae:.5f}")

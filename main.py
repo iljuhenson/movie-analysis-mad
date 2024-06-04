@@ -115,6 +115,38 @@ def process_original_language(movies_metadata):
     return movies_metadata
 
 
+def process_cast_director(movies_metadata: pd.DataFrame, credits_df: pd.DataFrame) -> list:
+    cast_list: list[int] = []
+    director_list: list[int] = []
+
+    for entry in movies_metadata.itertuples():
+        tmp = credits_df[credits_df["id"] == int(entry.id)]
+        actors = ast.literal_eval(tmp.cast.to_list()[0])
+        actor_id = actors[0]['id'] if len(actors) > 0 else -1
+        director_id = -1
+        try:
+            ls = list(filter(lambda x: x['job'] == "Director", ast.literal_eval(tmp.cast.to_list()[0])))
+            director_id = ls[0]["id"] if len(ls) > 0 else -1
+        except KeyError or TypeError or IndexError:
+            pass
+
+        if director_id == -1:
+            try:
+                ls = list(filter(lambda x: x['job'] == "Director", ast.literal_eval(tmp.crew.to_list()[-1])))
+                director_id = ls[0]["id"] if len(ls) > 0 else -1
+            except KeyError or TypeError:
+                pass
+
+        cast_list.append(actor_id)
+        director_list.append(director_id)
+
+    return cast_list, director_list
+    
+
+def process_keyword(movies_metadata: pd.DataFrame, keywords_df: pd.DataFrame):
+    pass
+
+
 COUNTRY_CODES = [
     "",
     "mn",
@@ -327,9 +359,14 @@ COUNTRY_CODES = [
     "sy",
 ]
 
-file_path = r"output\\avg_of_rating_per_movieId.csv"
+
+credits_file_path = r"input/archive/credits.csv"
+credits_df = pd.read_csv(credits_file_path)
+keywords_file_path = r"input/archive/keywords.csv"
+keywords_df = pd.read_csv(credits_file_path)
+file_path = r"output/avg_of_rating_per_movieId.csv"
 movies_df = pd.read_csv(file_path)
-movies_metadata_file_path = r"input\\archive\\movies_metadata.csv"
+movies_metadata_file_path = r"input/archive/movies_metadata.csv"
 movies_metadata = pd.read_csv(movies_metadata_file_path, low_memory=False)
 
 # List of numerical variables to plot
@@ -350,6 +387,11 @@ movie_ids = movies_df["movieId"].to_list()
 movie_ids2 = movies_metadata["id"].to_list()
 
 # setup
+cast_list, director_list = process_cast_director(movies_metadata, credits_df)
+
+print(cast_list)
+print(director_list)
+
 movies_metadata = process_genres(movies_metadata)
 
 movies_metadata = process_spoken_languages(movies_metadata)
@@ -361,6 +403,7 @@ movies_metadata = process_production_countries(movies_metadata)
 movies_metadata = process_release_date(movies_metadata)
 
 movies_metadata = process_original_language(movies_metadata)
+
 
 ids = movies_metadata["imdb_id"].to_list()
 ids2 = movies_df["imdbId"].to_list()
