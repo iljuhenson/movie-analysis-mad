@@ -199,17 +199,17 @@ movie_ids2 = movies_metadata["id"].to_list()
 # movies_metadata = process_keywords(movies_metadata, keywords_df)
 
 movies_metadata = process_cast_director(movies_metadata, credits_df)
-print("Director and top actor done")
+print("Director and top actor DONE")
 movies_metadata = process_genres(movies_metadata)
-print("Genres done")
+print("Genres DONE")
 movies_metadata = process_spoken_languages(movies_metadata)
-print("Spoken languages done")
+print("Spoken languages DONE")
 movies_metadata = process_production_countries(movies_metadata)
-print("Production countries done")
+print("Production countries DONE")
 movies_metadata = process_release_date(movies_metadata)
-print("Release date done")
+print("Release date DONE")
 movies_metadata = process_original_language(movies_metadata)
-print("Original language done")
+print("Original language DONE")
 
 ids = movies_metadata["imdb_id"].to_list()
 ids2 = movies_df["imdbId"].to_list()
@@ -229,7 +229,7 @@ for i in range(len(ids)):
         resultIds.append(ids[i])
 new_avg = {"imdbId": resultIds, "avg_of_rating": result}
 
-print("Maching ids metadata and ratings done")
+print("Maching ids metadata and ratings DONE")
 
 output_data = {
     "matched_ids_avg": new_avg["imdbId"],
@@ -263,7 +263,7 @@ output_file = output_file[output_file["avg_of_rating"] != -1]
 output_file = output_file[output_file["top_actor_id"] != -1]
 output_file = output_file[output_file["director_id"] != -1]
 
-print("Omiting movies with not all data done")
+print("Omiting movies with not all data DONE")
 output_file_path = "output/movies_relevant_data.csv"
 output_file.to_csv(output_file_path, index=False)
-print("File saved. All done!")
+print("File saved. All DONE!")
