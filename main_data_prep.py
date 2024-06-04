@@ -118,8 +118,8 @@ def process_original_language(movies_metadata):
 def process_cast_director(
     movies_metadata: pd.DataFrame, credits_df: pd.DataFrame
 ) -> list:
-    cast_list: list[int] = []
-    director_list: list[int] = []
+    top_actors_list: list[int] = []
+    directors_list: list[int] = []
     num_of_misses_cast = 0
     num_of_misses_director = 0
     for entry in movies_metadata.itertuples():
@@ -153,12 +153,14 @@ def process_cast_director(
             num_of_misses_cast += 1
         if director_id == 1:
             num_of_misses_director += 1
-        cast_list.append(actor_id)
-        director_list.append(director_id)
+        top_actors_list.append(actor_id)
+        directors_list.append(director_id)
 
-    print(f"Cast misses: {num_of_misses_cast/len(cast_list)*100}%")
-    print(f"Director misses: {num_of_misses_director/len(director_list)*100}%")
-    return cast_list, director_list
+    print(f"Cast misses: {num_of_misses_cast/len(top_actors_list)*100}%")
+    print(f"Director misses: {num_of_misses_director/len(directors_list)*100}%")
+    movies_metadata["top_actor_id"] = top_actors_list
+    movies_metadata["director"] = directors_list
+    return movies_metadata
 
 
 def process_keyword(movies_metadata: pd.DataFrame, keywords_df: pd.DataFrame):
@@ -390,6 +392,8 @@ movies_metadata = pd.read_csv(movies_metadata_file_path, low_memory=False)
 # List of numerical variables to plot
 columns_names = [
     "budget",
+    "director_id",
+    "top_actor_id",
     "genres",
     "original_language",
     "release_date",
@@ -404,8 +408,7 @@ movie_ids = movies_df["movieId"].to_list()
 movie_ids2 = movies_metadata["id"].to_list()
 
 # setup
-cast_list, director_list = process_cast_director(movies_metadata, credits_df)
-
+movies_metadata = process_cast_director(movies_metadata, credits_df)
 
 movies_metadata = process_genres(movies_metadata)
 
@@ -436,11 +439,28 @@ for i in range(len(ids)):
         resultIds.append(ids[i])
 new_avg = {"imdbId": resultIds, "avg_of_rating": result}
 
+
+columns_names = [
+    "budget",
+    "director_id",
+    "top_actor_id",
+    "genres",
+    "original_language",
+    "release_date",
+    "revenue",
+    "spoken_languages",
+    "runtime",
+    "production_companies",
+    "production_countries",
+]
+
 output_data = {
     "matched_ids_avg": new_avg["imdbId"],
     "movieId_movies_metadata": movies_metadata["imdb_id"],
     "avg_of_rating": new_avg["avg_of_rating"],
     "budget": movies_metadata["budget"],
+    "director_id": movies_metadata["director_id"],
+    "top_actor_id": movies_metadata["top_actor_id"],
     "genres": movies_metadata["genres"],
     "original_language": movies_metadata["original_language"],
     "release_date": movies_metadata["release_date"],
@@ -451,7 +471,7 @@ output_data = {
     "vote_count": movies_metadata["vote_count"],
 }
 output_df = pd.DataFrame(output_data)
-# omiting the movies with no rating
+# omiting the movies with not all data
 output_df = output_df[output_df["budget"] != 0]
 output_df = output_df[output_df["genres"] != 0]
 output_df = output_df[output_df["original_language"] != 0]
@@ -462,6 +482,8 @@ output_df = output_df[output_df["runtime"] != 0]
 output_df = output_df[output_df["production_countries"] != 0]
 output_df = output_df[output_df["vote_count"] != 0]
 output_df = output_df[output_df["avg_of_rating"] != -1]
+output_df = output_df[output_df["top_actor_id"] != -1]
+output_df = output_df[output_df["director_id"] != -1]
 output_file_path = "output/movies_relevant_data.csv"
 output_df.to_csv(output_file_path, index=False)
 print("done")
