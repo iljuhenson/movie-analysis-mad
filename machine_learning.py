@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error
 
 
-file_path = "output/movies_relevant_data.csv"
+file_path = "output/movies_relevant_data_num_ids.csv"
 movies_df = pd.read_csv(file_path)
 
 # Data Preparation
