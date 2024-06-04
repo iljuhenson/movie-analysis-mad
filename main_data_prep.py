@@ -163,8 +163,22 @@ def process_cast_director(
     return movies_metadata
 
 
-def process_keyword(movies_metadata: pd.DataFrame, keywords_df: pd.DataFrame):
-    pass
+def process_keywords(movies_metadata: pd.DataFrame, keywords_df: pd.DataFrame):
+    list_keywords_per_movie = []
+    num_of_misses_cast = 0
+    for entry in keywords_df.itertuples():
+        if len(entry.keywords) != 0:
+            keywords = ast.literal_eval(entry.keywords)
+            tmdbId = entry.id
+            if len(keywords) > 0:
+                temp = {"tmdbId": tmdbId, "keyword": keywords[0]["id"]}
+                list_keywords_per_movie.append(temp)
+                continue
+
+        num_of_misses += 1
+    print()
+    # movies_metadata["keyword_id"] = list_keywords_per_movie
+    return movies_metadata
 
 
 COUNTRY_CODES = [
@@ -383,7 +397,7 @@ COUNTRY_CODES = [
 credits_file_path = r"input/archive/credits.csv"
 credits_df = pd.read_csv(credits_file_path)
 keywords_file_path = r"input/archive/keywords.csv"
-keywords_df = pd.read_csv(credits_file_path)
+keywords_df = pd.read_csv(keywords_file_path)
 file_path = r"output/avg_of_rating_per_movieId.csv"
 movies_df = pd.read_csv(file_path)
 movies_metadata_file_path = r"input/archive/movies_metadata.csv"
@@ -403,11 +417,13 @@ columns_names = [
     "production_companies",
     "production_countries",
 ]
-numerical_values = {column: movies_metadata[column] for column in columns_names}
+
 movie_ids = movies_df["movieId"].to_list()
 movie_ids2 = movies_metadata["id"].to_list()
 
 # setup
+movies_metadata = process_keywords(movies_metadata, keywords_df)
+
 movies_metadata = process_cast_director(movies_metadata, credits_df)
 
 movies_metadata = process_genres(movies_metadata)
@@ -420,6 +436,7 @@ movies_metadata = process_release_date(movies_metadata)
 
 movies_metadata = process_original_language(movies_metadata)
 
+numerical_values = {column: movies_metadata[column] for column in columns_names}
 
 ids = movies_metadata["imdb_id"].to_list()
 ids2 = movies_df["imdbId"].to_list()
