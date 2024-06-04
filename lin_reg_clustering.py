@@ -2,23 +2,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.cluster import KMeans
+from constants import NUMERICAL_COLUMNS
 
 file_path = "output/movies_relevant_data_num_ids.csv"
 movies_df = pd.read_csv(file_path)
-clustering_features_simple = [
-    "adult",
-    "budget",
-    "genres",
-    "original_language",
-    "release_date",
-    "revenue",
-    "spoken_languages",
-    "runtime",
-    "production_countries",
-    "vote_count",
-    "avg_of_rating",
-]
 
+clustering_features_simple = NUMERICAL_COLUMNS  # without avg_of_rating
 X_clustering_simple = movies_df[clustering_features_simple]
 
 wcss = []
@@ -68,21 +57,12 @@ movies_df_clustering["cluster"] = movies_df_clustering["cluster"].astype(str)
 # Creating a pairplot to visualize all possible XY graphs of every k-means group
 sns.pairplot(movies_df_clustering, hue="cluster", palette="viridis", diag_kind="kde")
 plt.savefig("output/kmeans_pairplot.png")
+print("Pairplot saved in output folder")
 
 
 #            Linear Regression Model
-clustering_features = [
-    "adult",
-    "budget",
-    "genres",
-    "original_language",
-    "release_date",
-    "revenue",
-    "spoken_languages",
-    "runtime",
-    "production_countries",
-    "vote_count",
-]
+
+clustering_features = NUMERICAL_COLUMNS[1:]  # Excluding avg_of_rating
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error
