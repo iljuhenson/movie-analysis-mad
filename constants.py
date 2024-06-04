@@ -1,6 +1,7 @@
 NUMERICAL_COLUMNS = [
     "avg_of_rating",
-    "adult",
+    "director_id",
+    "top_actor_id",
     "budget",
     "genres",
     "original_language",
