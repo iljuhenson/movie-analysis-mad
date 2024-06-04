@@ -121,7 +121,9 @@ def process_cast_director(movies_metadata: pd.DataFrame, credits_df: pd.DataFram
 
     for entry in movies_metadata.itertuples():
         tmp = credits_df[credits_df["id"] == int(entry.id)]
-        actors = ast.literal_eval(tmp.cast.to_list()[0])
+        print(tmp.cast.to_list()[0])
+        pass
+        actors = tmp.cast.to_list()[0]
         actor_id = actors[0]['id'] if len(actors) > 0 else -1
         director_id = -1
         try:

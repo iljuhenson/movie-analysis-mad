@@ -1,0 +1,11 @@
+from machine_learning import *
+
+# Training the Model
+for i in range(20,200):
+    for j in range(5,200):
+        history_reg = model_reg.fit(X_train, y_train, epochs=i, batch_size=j, validation_split=0.2, verbose=0)
+        # Evaluating the Model
+        y_pred = model_reg.predict(X_test)
+        mae = mean_absolute_error(y_test, y_pred)
+        with open(r"output/machine_learning_reg")
+        print(f"epochs: {i}, batch_size: {j},  Mean Absolute Error for Average Rating: {mae:.5f}")
