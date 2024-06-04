@@ -42,7 +42,7 @@ def process_spoken_languages(movies_metadata):
     return movies_metadata
 
 
-def process_adult(movies_metadata):
+def _process_adult(movies_metadata):
     list_of_adult_per_movie = movies_metadata["adult"].to_list()
     for i in range(len(movies_metadata["adult"])):
         list_of_adult_per_movie[i] = int(list_of_adult_per_movie[i])
@@ -389,7 +389,6 @@ movies_metadata = pd.read_csv(movies_metadata_file_path, low_memory=False)
 
 # List of numerical variables to plot
 columns_names = [
-    "adult",
     "budget",
     "genres",
     "original_language",
@@ -411,8 +410,6 @@ cast_list, director_list = process_cast_director(movies_metadata, credits_df)
 movies_metadata = process_genres(movies_metadata)
 
 movies_metadata = process_spoken_languages(movies_metadata)
-
-movies_metadata = process_adult(movies_metadata)
 
 movies_metadata = process_production_countries(movies_metadata)
 
@@ -443,7 +440,6 @@ output_data = {
     "matched_ids_avg": new_avg["imdbId"],
     "movieId_movies_metadata": movies_metadata["imdb_id"],
     "avg_of_rating": new_avg["avg_of_rating"],
-    "adult": movies_metadata["adult"],
     "budget": movies_metadata["budget"],
     "genres": movies_metadata["genres"],
     "original_language": movies_metadata["original_language"],
