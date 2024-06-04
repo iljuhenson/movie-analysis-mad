@@ -44,7 +44,7 @@ plt.xlabel("Number of clusters")
 plt.ylabel("WCSS")
 plt.show()
 
-# optimal_k = 2
+optimal_k = 2
 
 # Fitting k-means with best num of clasters
 kmeans_simple = KMeans(n_clusters=optimal_k, init="k-means++", random_state=42)
@@ -69,6 +69,8 @@ movies_df_clustering["cluster"] = movies_df_clustering["cluster"].astype(str)
 sns.pairplot(movies_df_clustering, hue="cluster", palette="viridis", diag_kind="kde")
 plt.savefig("output/kmeans_pairplot.png")
 
+
+#            Linear Regression Model
 clustering_features = [
     "adult",
     "budget",
@@ -81,7 +83,6 @@ clustering_features = [
     "production_countries",
     "vote_count",
 ]
-#            Linear Regression Model
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error
