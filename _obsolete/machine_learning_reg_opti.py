@@ -1,4 +1,4 @@
-from machine_learning import *
+from _obsolete.machine_learning import *
 
 # Training the Model
 for i in range(1, 12, 1):

@@ -1,4 +1,4 @@
-from dbscan import *
+from _obsolete.dbscan import *
 
 
 # Training the Model
