@@ -28,23 +28,10 @@ def knn_best_params(X_train, y_train, X_test, y_test):
     return best_k, best_score
 
 
-def hybrid_method_predict(X_vals) -> np.ndarray:
+
+
+def hybrid_method_predict(X_vals, X_train, y_test) -> np.ndarray:
  
-    data = pd.read_csv('output/movies_relevant_data_num_ids.csv')
-
-    threshold = data['avg_of_rating'].median()
-    data['label'] = (data['avg_of_rating'] >= threshold).astype(int)
-
-    features = NUMERICAL_COLUMNS
-    X = data[features]
-    y = data['label']
-
-    
-    scaler = StandardScaler()
-    X = scaler.fit_transform(X)
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
     svc = LinearSVC()
     svc.fit(X_train, y_train)
     d1 = svc.predict(X_vals)
@@ -65,12 +52,12 @@ def hybrid_method_predict(X_vals) -> np.ndarray:
 
 
 data = pd.read_csv('output/movies_relevant_data_num_ids.csv')
-
 threshold = data['avg_of_rating'].median()
 data['label'] = (data['avg_of_rating'] >= threshold).astype(int)
 
+
 features = NUMERICAL_COLUMNS
-X = data[features]
+X = data[features].drop('avg_of_rating', axis=1)
 y = data['label']
 
 
@@ -102,7 +89,7 @@ svc.fit(X_train, y_train)
 y_pred = svc.predict(X_test)
 print("Accuracy:", accuracy_score(y_test, y_pred))
 print("Classification Report:\n", classification_report(y_test, y_pred))
-y_pred = hybrid_method_predict(X_test)
+y_pred = hybrid_method_predict(X_test, X_train, y_test)
 print("Accuracy: ", accuracy_score(y_test, y_pred))
 print("Classification Report:\n", classification_report(y_test, y_pred))
 
