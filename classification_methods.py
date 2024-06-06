@@ -117,8 +117,15 @@ plt.xlabel('Prediction')
 plt.ylabel('Actual')
 plt.title('Confusion Matrix')
 plt.savefig("output/confusion_matrix.png")
-scores = cross_val_score(knn, X, y, cv=10)
 
+
+score_knn = cross_val_score(knn, X, y, cv=10)
+score_svc = cross_val_score(svc, X, y, cv=10)
+score_logistic = cross_val_score(logistic, X, y, cv=10)
 # Wyświetlenie wyników
-print(f"Średni wynik walidacji krzyżowej: {scores.mean():.2f}")
-print(f"Odchylenie standardowe wyników: {scores.std():.2f}")
+print(f"Średni wynik walidacji krzyżowej dla metody knn: {score_knn.mean():.2f}")
+print(f"Odchylenie standardowe wyników dla metody knn: {score_knn.std():.2f}")
+print(f"Średni wynik walidacji krzyżowej dla metody svc: {score_svc.mean():.2f}")
+print(f"Odchylenie standardowe wyników dla metody svc: {score_svc.std():.2f}")
+print(f"Średni wynik walidacji krzyżowej dla metody logistic: {score_logistic.mean():.2f}")
+print(f"Odchylenie standardowe wyników dla metody logistic: {score_logistic.std():.2f}")
