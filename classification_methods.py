@@ -145,6 +145,9 @@ plt.savefig("output/confusion_matrix.png")
 # plt.show()
 scores = cross_val_score(knn, X, y, cv=10)
 
+score_knn = cross_val_score(knn, X, y, cv=10)
+score_svc = cross_val_score(svc, X, y, cv=10)
+score_logistic = cross_val_score(logistic, X, y, cv=10)
 # Wyświetlenie wyników
 print(f"Średni wynik walidacji krzyżowej: {scores.mean():.2f}")
 print(f"Odchylenie standardowe wyników: {scores.std():.2f}")
