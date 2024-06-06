@@ -23,7 +23,7 @@ CLUSTER_COLUMNS = [
     "spoken_languages",
     "runtime",
     "production_countries",
-        "vote_count",
+    "vote_count",
 ]
 COUNTRY_CODES = [
     "",
