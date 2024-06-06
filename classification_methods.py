@@ -14,6 +14,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.model_selection import cross_val_score
 from sklearn.svm import LinearSVC
+import random_movie_generator
 
 
 def knn_best_params(X_train, y_train, X_test, y_test):
@@ -48,7 +49,7 @@ def hybrid_method_predict(X_vals, X_train) -> np.ndarray:
     logistic.fit(X_train, y_train)
     d2 = logistic.predict(X_vals)
 
-    knn = KNeighborsClassifier(n_neighbors=8)
+    knn = KNeighborsClassifier(n_neighbors=31)
     knn.fit(X_train, y_train)
     d3 = knn.predict(X_vals)
 
@@ -85,37 +86,47 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 
-knn = KNeighborsClassifier(n_neighbors=8)
+knn = KNeighborsClassifier(n_neighbors=31)
 knn.fit(X_train, y_train)
 y_pred = knn.predict(X_test)
 
 print("KNN")
-print("Accuracy:", accuracy_score(y_test, y_pred))
-print("Classification Report:\n", classification_report(y_test, y_pred))
+print(f"Dokładność {accuracy_score(y_test, y_pred):.5f}")
+knn_class_rap = classification_report(y_test, y_pred)
 
 logistic = LogisticRegression()
 logistic.fit(X_train, y_train)
 y_pred = logistic.predict(X_test)
 
 print("Logistic Regression")
-print("Accuracy:", accuracy_score(y_test, y_pred))
-print("Classification Report:\n", classification_report(y_test, y_pred))
+print(f"Dokładność {accuracy_score(y_test, y_pred):.5f}")
+log_reg_class_rap = classification_report(y_test, y_pred)
 
 # creating linear svc classifier
 svc = LinearSVC(dual=False, max_iter=10000)
 svc.fit(X_train, y_train)
 y_pred = svc.predict(X_test)
 print("Linear SVC")
-print("Accuracy:", accuracy_score(y_test, y_pred))
-print("Classification Report:\n", classification_report(y_test, y_pred))
+print(f"Dokładność {accuracy_score(y_test, y_pred):.5f}")
+lin_svc_class_rap = classification_report(y_test, y_pred)
 
 
 y_pred = hybrid_method_predict(X_test, X_train)
 print("Hybrid Method")
-print("Accuracy: ", accuracy_score(y_test, y_pred))
-print("Classification Report:\n", classification_report(y_test, y_pred))
+print(f"Dokładność {accuracy_score(y_test, y_pred):.5f}")
+hybrid_class_rap = classification_report(y_test, y_pred)
 labels = np.array(y_test)
 preds = np.array(y_pred)
+
+print("\n \t\tRaporty klasyfikcaji:\n")
+print("K najbliższych sąsiadów:")
+print(knn_class_rap)
+print("Regresja logistyczna:")
+print(log_reg_class_rap)
+print("SVC:")
+print(lin_svc_class_rap)
+print("Hybrydowa metoda:")
+print(hybrid_class_rap)
 
 cm = confusion_matrix(labels, preds)
 
@@ -138,9 +149,7 @@ scores = cross_val_score(knn, X, y, cv=10)
 print(f"Średni wynik walidacji krzyżowej: {scores.mean():.2f}")
 print(f"Odchylenie standardowe wyników: {scores.std():.2f}")
 
-
-# # Generacja losowych dannyc i pokazanie wyników
-import random_movie_generator
+# Generacja losowych danych i wyświetlanie wyników
 
 rand_values = random_movie_generator.generate_random_values(len(X_test))
 rand_values = scaler.fit_transform(rand_values)
