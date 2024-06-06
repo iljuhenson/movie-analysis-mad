@@ -1,8 +1,8 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.mixture import BayesianGaussianMixture
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import silhouette_score
+from sklearn.mixture import BayesianGaussianMixture
+from sklearn.metrics import adjusted_rand_score
 from constants import NUMERICAL_COLUMNS
 
 file_path = "output/movies_relevant_data_num_ids.csv"
@@ -11,29 +11,35 @@ movies_df = pd.read_csv(file_path)
 # Selecting relevant features for clustering
 clustering_features = NUMERICAL_COLUMNS
 
-X = movies_df[clustering_features]
+
+# Define features (X) and target (y)
+X = movies_df[clustering_features].drop(columns=["avg_of_rating"])
+y = movies_df["avg_of_rating"]
 
 # Standardize the features
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
 # Splitting the data into training and testing sets
-X_train, X_test = train_test_split(X_scaled, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(
+    X_scaled, y, test_size=0.2, random_state=42
+)
 
-# Bayesian Gaussian Mixture Model
+# Train the Bayesian Gaussian Mixture Model
 bgmm = BayesianGaussianMixture(n_components=2, covariance_type="full", random_state=42)
 bgmm.fit(X_train)  # Train the model on the training set
 
 # Predicting clusters for the testing set
 test_clusters = bgmm.predict(X_test)
 
-# Evaluate the model using silhouette score
-silhouette_avg = silhouette_score(X_test, test_clusters)
-print("Silhouette Score:", silhouette_avg)
+# Validation: We can use adjusted rand index to compare the clustering with actual ratings
+# Note: Since `avg_of_rating` is continuous, we need to create clusters from it for comparison
 
-# Save the cluster labels to a CSV file
-cluster_labels = pd.DataFrame(test_clusters, columns=["cluster"])
-cluster_labels["movieId"] = movies_df["movieId_movies_metadata"]
-cluster_labels["avg_of_rating"] = movies_df["avg_of_rating"]
-cluster_labels.to_csv("output/cluster_labels.csv", index=False)
+# Create a binary classification for `avg_of_rating` (e.g., high vs. low rating)
+threshold = y_test.median()
+y_test_clusters = (y_test > threshold).astype(int)
 
+# Validate the clustering result using Adjusted Rand Index
+ari_score = adjusted_rand_score(y_test_clusters, test_clusters)
+
+print(f"Adjusted Rand Index: {ari_score}")
