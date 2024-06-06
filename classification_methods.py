@@ -54,10 +54,10 @@ y_pred = logistic.predict(X_test)
 print("Accuracy:", accuracy_score(y_test, y_pred))
 print("Classification Report:\n", classification_report(y_test, y_pred))
 
-from sklearn.linear_model import SGDClassifier
-sgd = SGDClassifier()
-sgd.fit(X_train, y_train)
-y_pred = sgd.predict(X_test)
+# creating linear svc classifier
+from sklearn.svm import LinearSVC
+svc = LinearSVC()
+svc.fit(X_train, y_train)
+y_pred = svc.predict(X_test)
 print("Accuracy:", accuracy_score(y_test, y_pred))
 print("Classification Report:\n", classification_report(y_test, y_pred))
-
