@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import ast
 import numpy as np
+from constants import COUNTRY_CODES
 
 
 def process_genres(movies_metadata):
@@ -156,270 +157,59 @@ def process_cast_director(
         top_actors_list.append(actor_id)
         directors_list.append(director_id)
 
-    print(f"Cast misses: {num_of_misses_cast/len(top_actors_list)*100}%")
-    print(f"Director misses: {num_of_misses_director/len(directors_list)*100}%")
+    print(f"Cast misses: {num_of_misses_cast}")
+    print(f"Director misses: {num_of_misses_director}")
     movies_metadata["top_actor_id"] = top_actors_list
-    movies_metadata["director"] = directors_list
+    movies_metadata["director_id"] = directors_list
     return movies_metadata
 
 
-def process_keyword(movies_metadata: pd.DataFrame, keywords_df: pd.DataFrame):
-    pass
+def process_keywords(movies_metadata: pd.DataFrame, keywords_df: pd.DataFrame):
+    list_keywords_per_movie = []
+    num_of_misses_cast = 0
+    for entry in keywords_df.itertuples():
+        if len(entry.keywords) != 0:
+            keywords = ast.literal_eval(entry.keywords)
+            tmdbId = entry.id
+            if len(keywords) > 0:
+                temp = {"tmdbId": tmdbId, "keyword": keywords[0]["id"]}
+                list_keywords_per_movie.append(temp)
+                continue
 
-
-COUNTRY_CODES = [
-    "",
-    "mn",
-    "nz",
-    "dk",
-    "fr",
-    "mm",
-    "fy",
-    "qu",
-    "be",
-    "vn",
-    "me",
-    "as",
-    "tg",
-    "ny",
-    "au",
-    "hi",
-    "zh",
-    "it",
-    "wo",
-    "na",
-    "sw",
-    "zu",
-    "th",
-    "ps",
-    "mk",
-    "tw",
-    "ki",
-    "us",
-    "so",
-    "bn",
-    "ka",
-    "ky",
-    "bm",
-    "ms",
-    "jo",
-    "rw",
-    "mq",
-    "tn",
-    "pl",
-    "ja",
-    "nl",
-    "tt",
-    "pa",
-    "az",
-    "ln",
-    "kn",
-    "et",
-    "fa",
-    "sk",
-    "yi",
-    "eu",
-    "ec",
-    "es",
-    "ba",
-    "sg",
-    "gu",
-    "cy",
-    "te",
-    "ve",
-    "iq",
-    "kh",
-    "cm",
-    "ar",
-    "ua",
-    "ci",
-    "gd",
-    "ly",
-    "ni",
-    "ge",
-    "tr",
-    "gb",
-    "hk",
-    "ws",
-    "ae",
-    "gh",
-    "eg",
-    "sh",
-    "gn",
-    "ne",
-    "ko",
-    "ir",
-    "he",
-    "af",
-    "yu",
-    "ha",
-    "is",
-    "sn",
-    "uy",
-    "ug",
-    "da",
-    "um",
-    "hu",
-    "pk",
-    "bs",
-    "ml",
-    "mt",
-    "li",
-    "ce",
-    "my",
-    "ao",
-    "en",
-    "kw",
-    "tj",
-    "xg",
-    "rs",
-    "ee",
-    "ro",
-    "do",
-    "vi",
-    "pr",
-    "km",
-    "jv",
-    "il",
-    "ph",
-    "ur",
-    "lu",
-    "ng",
-    "cu",
-    "bg",
-    "ga",
-    "pt",
-    "uk",
-    "co",
-    "la",
-    "tl",
-    "pe",
-    "aw",
-    "in",
-    "cd",
-    "ma",
-    "kr",
-    "el",
-    "ab",
-    "ku",
-    "lo",
-    "si",
-    "eo",
-    "hy",
-    "bf",
-    "lk",
-    "pg",
-    "cz",
-    "sv",
-    "id",
-    "kg",
-    "am",
-    "xh",
-    "lt",
-    "ay",
-    "de",
-    "cr",
-    "tz",
-    "lv",
-    "kp",
-    "dz",
-    "cl",
-    "td",
-    "bo",
-    "jp",
-    "bt",
-    "mi",
-    "cn",
-    "nb",
-    "lb",
-    "se",
-    "bw",
-    "su",
-    "bi",
-    "sq",
-    "fi",
-    "iu",
-    "ff",
-    "cs",
-    "xx",
-    "no",
-    "py",
-    "at",
-    "mc",
-    "sl",
-    "za",
-    "lr",
-    "by",
-    "al",
-    "jm",
-    "mx",
-    "np",
-    "br",
-    "bd",
-    "gt",
-    "sa",
-    "hr",
-    "ru",
-    "kk",
-    "ch",
-    "sm",
-    "mr",
-    "ie",
-    "xc",
-    "ta",
-    "kz",
-    "ca",
-    "sr",
-    "[]",
-    "gr",
-    "qa",
-    "gl",
-    "st",
-    "uz",
-    "sy",
-]
+        num_of_misses += 1
+    print()
+    # movies_metadata["keyword_id"] = list_keywords_per_movie
+    return movies_metadata
 
 
 credits_file_path = r"input/archive/credits.csv"
 credits_df = pd.read_csv(credits_file_path)
 keywords_file_path = r"input/archive/keywords.csv"
-keywords_df = pd.read_csv(credits_file_path)
+keywords_df = pd.read_csv(keywords_file_path)
 file_path = r"output/avg_of_rating_per_movieId.csv"
 movies_df = pd.read_csv(file_path)
 movies_metadata_file_path = r"input/archive/movies_metadata.csv"
 movies_metadata = pd.read_csv(movies_metadata_file_path, low_memory=False)
 
-# List of numerical variables to plot
-columns_names = [
-    "budget",
-    "director_id",
-    "top_actor_id",
-    "genres",
-    "original_language",
-    "release_date",
-    "revenue",
-    "spoken_languages",
-    "runtime",
-    "production_companies",
-    "production_countries",
-]
-numerical_values = {column: movies_metadata[column] for column in columns_names}
+
 movie_ids = movies_df["movieId"].to_list()
 movie_ids2 = movies_metadata["id"].to_list()
 
 # setup
+# movies_metadata = process_keywords(movies_metadata, keywords_df)
+
 movies_metadata = process_cast_director(movies_metadata, credits_df)
-
+print("Director and top actor DONE")
 movies_metadata = process_genres(movies_metadata)
-
+print("Genres DONE")
 movies_metadata = process_spoken_languages(movies_metadata)
-
+print("Spoken languages DONE")
 movies_metadata = process_production_countries(movies_metadata)
-
+print("Production countries DONE")
 movies_metadata = process_release_date(movies_metadata)
-
+print("Release date DONE")
 movies_metadata = process_original_language(movies_metadata)
-
+print("Original language DONE")
 
 ids = movies_metadata["imdb_id"].to_list()
 ids2 = movies_df["imdbId"].to_list()
@@ -439,20 +229,7 @@ for i in range(len(ids)):
         resultIds.append(ids[i])
 new_avg = {"imdbId": resultIds, "avg_of_rating": result}
 
-
-columns_names = [
-    "budget",
-    "director_id",
-    "top_actor_id",
-    "genres",
-    "original_language",
-    "release_date",
-    "revenue",
-    "spoken_languages",
-    "runtime",
-    "production_companies",
-    "production_countries",
-]
+print("Maching ids metadata and ratings DONE")
 
 output_data = {
     "matched_ids_avg": new_avg["imdbId"],
@@ -470,20 +247,23 @@ output_data = {
     "production_countries": movies_metadata["production_countries"],
     "vote_count": movies_metadata["vote_count"],
 }
-output_df = pd.DataFrame(output_data)
+output_file = pd.DataFrame(output_data)
+
 # omiting the movies with not all data
-output_df = output_df[output_df["budget"] != 0]
-output_df = output_df[output_df["genres"] != 0]
-output_df = output_df[output_df["original_language"] != 0]
-output_df = output_df[output_df["release_date"] != 0]
-output_df = output_df[output_df["revenue"] != 0]
-output_df = output_df[output_df["spoken_languages"] != 0]
-output_df = output_df[output_df["runtime"] != 0]
-output_df = output_df[output_df["production_countries"] != 0]
-output_df = output_df[output_df["vote_count"] != 0]
-output_df = output_df[output_df["avg_of_rating"] != -1]
-output_df = output_df[output_df["top_actor_id"] != -1]
-output_df = output_df[output_df["director_id"] != -1]
+output_file = output_file[output_file["budget"] != 0]
+output_file = output_file[output_file["genres"] != 0]
+output_file = output_file[output_file["original_language"] != 0]
+output_file = output_file[output_file["release_date"] != 0]
+output_file = output_file[output_file["revenue"] != 0]
+output_file = output_file[output_file["spoken_languages"] != 0]
+output_file = output_file[output_file["runtime"] != 0]
+output_file = output_file[output_file["production_countries"] != 0]
+output_file = output_file[output_file["vote_count"] != 0]
+output_file = output_file[output_file["avg_of_rating"] != -1]
+output_file = output_file[output_file["top_actor_id"] != -1]
+output_file = output_file[output_file["director_id"] != -1]
+
+print("Omiting movies with not all data DONE")
 output_file_path = "output/movies_relevant_data.csv"
-output_df.to_csv(output_file_path, index=False)
-print("done")
+output_file.to_csv(output_file_path, index=False)
+print("File saved. All DONE!")
