@@ -3,10 +3,11 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score, classification_report, precision_score, recall_score, f1_score
+from sklearn.metrics import accuracy_score, classification_report, precision_score, recall_score, f1_score, confusion_matrix
 from sklearn.linear_model import LogisticRegression
 from constants import NUMERICAL_COLUMNS
-
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 def knn_best_params(X_train, y_train, X_test, y_test):
     best_k = 0
@@ -61,3 +62,17 @@ svc.fit(X_train, y_train)
 y_pred = svc.predict(X_test)
 print("Accuracy:", accuracy_score(y_test, y_pred))
 print("Classification Report:\n", classification_report(y_test, y_pred))
+
+
+labels = np.array(y_test)
+preds = np.array(y_pred)
+
+cm = confusion_matrix(labels, preds)
+
+plt.figure(figsize=(10, 7))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=['Predicted Negative', 'Predicted Positive'], yticklabels=['Actual Negative', 'Actual Positive'])
+plt.xlabel('Prediction')
+plt.ylabel('Actual')
+plt.title('Confusion Matrix')
+plt.savefig("output/confusion_matrix.png")
+
