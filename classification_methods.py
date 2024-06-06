@@ -122,3 +122,14 @@ scores = cross_val_score(knn, X, y, cv=10)
 # Wyświetlenie wyników
 print(f"Średni wynik walidacji krzyżowej: {scores.mean():.2f}")
 print(f"Odchylenie standardowe wyników: {scores.std():.2f}")
+
+
+# Generacja losowych dannyc i pokazanie wyników
+import random_movie_generator
+rand_values = random_movie_generator.generate_random_values(5)[NUMERICAL_COLUMNS]
+rand_values = scaler.fit_transform(rand_values)
+
+print("\nPredykcja dla losowych danych:")
+print(knn.predict(rand_values))
+print(logistic.predict(rand_values))
+print(svc.predict(rand_values))
