@@ -12,6 +12,19 @@ NUMERICAL_COLUMNS = [
     "production_countries",
     "vote_count",
 ]
+CLUSTER_COLUMNS = [
+    "director_id",
+    "top_actor_id",
+    "budget",
+    "genres",
+    "original_language",
+    "release_date",
+    "revenue",
+    "spoken_languages",
+    "runtime",
+    "production_countries",
+        "vote_count",
+]
 COUNTRY_CODES = [
     "",
     "mn",

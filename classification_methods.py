@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, classification_report, precision_score, recall_score, f1_score, confusion_matrix
 from sklearn.linear_model import LogisticRegression
-from constants import NUMERICAL_COLUMNS
+from constants import CLUSTER_COLUMNS
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.model_selection import cross_val_score
@@ -28,6 +28,8 @@ def knn_best_params(X_train, y_train, X_test, y_test):
     return best_k, best_score
 
 
+
+
 def hybrid_method_predict(X_vals) -> np.ndarray:
  
     data = pd.read_csv('output/movies_relevant_data_num_ids.csv')
@@ -35,7 +37,7 @@ def hybrid_method_predict(X_vals) -> np.ndarray:
     threshold = data['avg_of_rating'].median()
     data['label'] = (data['avg_of_rating'] >= threshold).astype(int)
 
-    features = NUMERICAL_COLUMNS
+    features = CLUSTER_COLUMNS
     X = data[features]
     y = data['label']
 
@@ -65,11 +67,13 @@ def hybrid_method_predict(X_vals) -> np.ndarray:
 
 
 data = pd.read_csv('output/movies_relevant_data_num_ids.csv')
-
 threshold = data['avg_of_rating'].median()
 data['label'] = (data['avg_of_rating'] >= threshold).astype(int)
+data = data.drop('avg_of_rating', axis=1)
 
-features = NUMERICAL_COLUMNS
+
+
+features = CLUSTER_COLUMNS
 X = data[features]
 y = data['label']
 
@@ -126,7 +130,7 @@ print(f"Odchylenie standardowe wyników: {scores.std():.2f}")
 
 # Generacja losowych dannyc i pokazanie wyników
 import random_movie_generator
-rand_values = random_movie_generator.generate_random_values(5)[NUMERICAL_COLUMNS]
+rand_values = random_movie_generator.generate_random_values(5)[CLUSTER_COLUMNS]
 rand_values = scaler.fit_transform(rand_values)
 
 print("\nPredykcja dla losowych danych:")
