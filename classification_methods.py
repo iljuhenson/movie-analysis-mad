@@ -1,14 +1,11 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import (
     accuracy_score,
     classification_report,
-    precision_score,
-    recall_score,
-    f1_score,
     confusion_matrix,
 )
 from sklearn.linear_model import LogisticRegression
@@ -16,8 +13,6 @@ from constants import NUMERICAL_COLUMNS
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.model_selection import cross_val_score
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.datasets import load_iris
 from sklearn.svm import LinearSVC
 
 
@@ -107,8 +102,7 @@ print("Accuracy:", accuracy_score(y_test, y_pred))
 print("Classification Report:\n", classification_report(y_test, y_pred))
 
 # creating linear svc classifier
-svc = LinearSVC(dual=True, max_iter=10000)
-
+svc = LinearSVC(dual=False, max_iter=10000)
 svc.fit(X_train, y_train)
 y_pred = svc.predict(X_test)
 print("Linear SVC")
@@ -120,7 +114,6 @@ y_pred = hybrid_method_predict(X_test, X_train)
 print("Hybrid Method")
 print("Accuracy: ", accuracy_score(y_test, y_pred))
 print("Classification Report:\n", classification_report(y_test, y_pred))
-
 labels = np.array(y_test)
 preds = np.array(y_pred)
 
@@ -129,16 +122,16 @@ cm = confusion_matrix(labels, preds)
 plt.figure(figsize=(10, 7))
 sns.heatmap(
     cm,
-    annot=True,
+    annot=cm,
     fmt="d",
-    cmap="Blues",
-    xticklabels=["Predicted Negative", "Predicted Positive"],
-    yticklabels=["Actual Negative", "Actual Positive"],
+    xticklabels=["Przewidziany zły", "Przewidziany dobry"],
+    yticklabels=["Faktycznie zły", "Faktycznie dobry"],
 )
-plt.xlabel("Prediction")
-plt.ylabel("Actual")
-plt.title("Confusion Matrix")
+plt.xlabel("Przewidziany stan")
+plt.ylabel("Stan faktyczny")
+plt.title("Macierz błędu")
 plt.savefig("output/confusion_matrix.png")
+plt.show()
 scores = cross_val_score(knn, X, y, cv=10)
 
 # Wyświetlenie wyników
@@ -156,3 +149,4 @@ print(f"Odchylenie standardowe wyników: {scores.std():.2f}")
 # print(knn.predict(rand_values))
 # print(logistic.predict(rand_values))
 # print(svc.predict(rand_values))
+print(sns.__version__)
