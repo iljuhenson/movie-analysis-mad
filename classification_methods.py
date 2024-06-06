@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import cross_val_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.datasets import load_iris
+from sklearn.svm import LinearSVC
 
 def knn_best_params(X_train, y_train, X_test, y_test):
     best_k = 0
@@ -25,6 +26,43 @@ def knn_best_params(X_train, y_train, X_test, y_test):
             best_k = k
 
     return best_k, best_score
+
+
+def hybrid_method_predict(X_vals) -> np.ndarray:
+ 
+    data = pd.read_csv('output/movies_relevant_data_num_ids.csv')
+
+    threshold = data['avg_of_rating'].median()
+    data['label'] = (data['avg_of_rating'] >= threshold).astype(int)
+
+    features = NUMERICAL_COLUMNS
+    X = data[features]
+    y = data['label']
+
+    
+    scaler = StandardScaler()
+    X = scaler.fit_transform(X)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    svc = LinearSVC()
+    svc.fit(X_train, y_train)
+    d1 = svc.predict(X_vals)
+
+    logistic = LogisticRegression()
+    logistic.fit(X_train, y_train)
+    d2 = logistic.predict(X_vals)
+
+    knn = KNeighborsClassifier(n_neighbors=8)
+    knn.fit(X_train, y_train)
+    d3 = knn.predict(X_vals)
+
+    ans = []
+    for val1, val2, val3 in zip(d1, d2, d3):
+        ans.append(round((val1 + val2 + val3) / 3))
+    
+    return np.array(ans)
+
 
 data = pd.read_csv('output/movies_relevant_data_num_ids.csv')
 
@@ -59,13 +97,14 @@ print("Accuracy:", accuracy_score(y_test, y_pred))
 print("Classification Report:\n", classification_report(y_test, y_pred))
 
 # creating linear svc classifier
-from sklearn.svm import LinearSVC
 svc = LinearSVC()
 svc.fit(X_train, y_train)
 y_pred = svc.predict(X_test)
 print("Accuracy:", accuracy_score(y_test, y_pred))
 print("Classification Report:\n", classification_report(y_test, y_pred))
-
+y_pred = hybrid_method_predict(X_test)
+print("Accuracy: ", accuracy_score(y_test, y_pred))
+print("Classification Report:\n", classification_report(y_test, y_pred))
 
 labels = np.array(y_test)
 preds = np.array(y_pred)
@@ -78,7 +117,6 @@ plt.xlabel('Prediction')
 plt.ylabel('Actual')
 plt.title('Confusion Matrix')
 plt.savefig("output/confusion_matrix.png")
-
 scores = cross_val_score(knn, X, y, cv=10)
 
 # Wyświetlenie wyników
