@@ -8,6 +8,9 @@ from sklearn.linear_model import LogisticRegression
 from constants import NUMERICAL_COLUMNS
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.model_selection import cross_val_score
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import load_iris
 
 def knn_best_params(X_train, y_train, X_test, y_test):
     best_k = 0
@@ -76,3 +79,8 @@ plt.ylabel('Actual')
 plt.title('Confusion Matrix')
 plt.savefig("output/confusion_matrix.png")
 
+scores = cross_val_score(knn, X, y, cv=10)
+
+# Wyświetlenie wyników
+print(f"Średni wynik walidacji krzyżowej: {scores.mean():.2f}")
+print(f"Odchylenie standardowe wyników: {scores.std():.2f}")
