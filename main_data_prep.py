@@ -201,12 +201,6 @@ movies_metadata = pd.read_csv(movies_metadata_file_path, low_memory=False)
 movie_ids = movies_df["movieId"].to_list()
 movie_ids2 = movies_metadata["id"].to_list()
 
-# setup
-
-# unused
-# movies_metadata = _process_keywords(movies_metadata, keywords_df)
-
-
 movies_metadata = process_cast_director(movies_metadata, credits_df)
 print("Director and top actor DONE")
 movies_metadata = process_genres(movies_metadata)
@@ -260,7 +254,6 @@ output_data = {
 }
 output_file = pd.DataFrame(output_data)
 
-# omiting the movies with not all data
 output_file = output_file[output_file["budget"] != 0]
 output_file = output_file[output_file["genres"] != 0]
 output_file = output_file[output_file["original_language"] != 0]
