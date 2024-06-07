@@ -26,20 +26,28 @@ def process_spoken_languages(movies_metadata):
     list_of_spoken_languages_per_movie = movies_metadata["spoken_languages"].to_list()
     temp_list_of_spoken_languages_per_movie = []
     temp_list_of_spoken_languages_per_movie.extend(list_of_spoken_languages_per_movie)
-
+    amount_of_spoken_languages_per_movie = [0] * len(
+        movies_metadata["spoken_languages"]
+    )
     for i in range(len(movies_metadata["spoken_languages"])):
         if temp_list_of_spoken_languages_per_movie[i] != "[]":
-            temp_list_of_spoken_languages_per_movie[i] = COUNTRY_CODES.index(
-                (
-                    ast.literal_eval(list_of_spoken_languages_per_movie[i])[0][
-                        "iso_639_1"
-                    ]
-                ).lower()
-            )
-        else:
-            temp_list_of_spoken_languages_per_movie[i] = 0
+            # temp_list_of_spoken_languages_per_movie[i] = COUNTRY_CODES.index(
+            #     (
+            #         ast.literal_eval(list_of_spoken_languages_per_movie[i])[0][
+            #             "iso_639_1"
+            #         ]
+            #     ).lower()
+            # )
 
-    movies_metadata["spoken_languages"] = temp_list_of_spoken_languages_per_movie
+            amount_of_spoken_languages_per_movie[i] = len(
+                ast.literal_eval(list_of_spoken_languages_per_movie[i])
+            )
+
+        else:
+            # temp_list_of_spoken_languages_per_movie[i] = 0
+            amount_of_spoken_languages_per_movie[i] = 0
+
+    movies_metadata["spoken_languages"] = amount_of_spoken_languages_per_movie
     return movies_metadata
 
 
@@ -146,7 +154,6 @@ def process_cast_director(
 
         if director_id == -1:
             for i in range(len(crew)):
-                # x = crew[i]
                 if crew[i]["job"] == "Director":
                     director_id = crew[i]["id"]
                     break
@@ -164,9 +171,9 @@ def process_cast_director(
     return movies_metadata
 
 
-def process_keywords(movies_metadata: pd.DataFrame, keywords_df: pd.DataFrame):
+def _process_keywords(movies_metadata: pd.DataFrame, keywords_df: pd.DataFrame):
     list_keywords_per_movie = []
-    num_of_misses_cast = 0
+    num_of_misses = 0
     for entry in keywords_df.itertuples():
         if len(entry.keywords) != 0:
             keywords = ast.literal_eval(entry.keywords)
@@ -177,8 +184,7 @@ def process_keywords(movies_metadata: pd.DataFrame, keywords_df: pd.DataFrame):
                 continue
 
         num_of_misses += 1
-    print()
-    # movies_metadata["keyword_id"] = list_keywords_per_movie
+    movies_metadata["keyword_id"] = list_keywords_per_movie
     return movies_metadata
 
 
@@ -196,7 +202,10 @@ movie_ids = movies_df["movieId"].to_list()
 movie_ids2 = movies_metadata["id"].to_list()
 
 # setup
-# movies_metadata = process_keywords(movies_metadata, keywords_df)
+
+# unused
+# movies_metadata = _process_keywords(movies_metadata, keywords_df)
+
 
 movies_metadata = process_cast_director(movies_metadata, credits_df)
 print("Director and top actor DONE")
@@ -210,6 +219,8 @@ movies_metadata = process_release_date(movies_metadata)
 print("Release date DONE")
 movies_metadata = process_original_language(movies_metadata)
 print("Original language DONE")
+
+print("Maching ids metadata and ratings...")
 
 ids = movies_metadata["imdb_id"].to_list()
 ids2 = movies_df["imdbId"].to_list()
