@@ -129,7 +129,8 @@ print("Hybrydowa metoda:")
 print(hybrid_class_rap)
 
 cm = confusion_matrix(labels, preds)
-
+print("\nMacierz błędu:")
+print(cm)
 plt.figure(figsize=(10, 7))
 sns.heatmap(
     cm,
